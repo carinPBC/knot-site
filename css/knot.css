@@ -26,7 +26,7 @@ nav.main-nav, .main-nav { background: #ffffff !important; }
 
 /* Nav */
 nav.main-nav { background: #ffffff !important; }
-.main-nav-inner { min-height: 200px !important; }
+.main-nav-inner { min-height: 220px !important; }
 
 .nav-links li a { color: #182f72 !important; font-weight: 600; }
 .nav-links li a:hover { color: #eb3945 !important; }
@@ -35,7 +35,7 @@ nav.main-nav { background: #ffffff !important; }
   border-bottom: 3px solid #eb3945 !important;
   font-weight: 800 !important;
 }
-.nav-logo img { height: 150px !important; padding: 24px 0 !important; }
+.nav-logo img { height: 180px !important; padding: 20px 0 !important; min-width: 280px !important; }
 
 /* Listen Live button */
 .listen-btn {
