@@ -993,7 +993,7 @@ a.content-card-link:hover .content-card-title { color: var(--red); }
     grid-template-columns: 160px 1fr auto;
   }
   .nav-links li a { padding: 8px 8px; font-size: 12px; }
-  .nav-logo img { height: 80px; }
+  .nav-logo img { height: 150px; }
 }
 @media (max-width: 768px) {
   .nav-links-wrap { display: none; }
@@ -1015,7 +1015,7 @@ a.content-card-link:hover .content-card-title { color: var(--red); }
 @media (max-width: 900px) {
   .main-nav-inner { padding: 0 16px; }
   .nav-links li a { padding: 6px 8px; font-size: 11px; }
-  .nav-logo img { height: 84px; }
+  .nav-logo img { height: 130px; }
 }
 @media (max-width: 480px) {
   .nav-links-wrap { display: none; }

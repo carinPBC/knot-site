@@ -208,12 +208,13 @@
   function applyTheme(t) {
     var underline = t.nav_underline === '1' || t.nav_underline === true;
     var css = [
-      'nav.main-nav { background: '+(t.nav_bg||'#ffffff')+' !important; }',
+      'nav.main-nav { background: #ffffff !important; }',
       '.more-than-radio { background: '+(t.mtr_bg||'#ffffff')+' !important; }',
       'nav.main-nav .nav-links li a { color: '+(t.nav_text||'#182f72')+' !important; }',
       'nav.main-nav .nav-links li a:hover { color: '+(t.nav_hover||'#eb3945')+'; }',
       'nav.main-nav .nav-links li a.active { color: '+(t.nav_active||'#eb3945')+' !important;'+(underline?' border-bottom: 3px solid '+(t.nav_active||'#eb3945')+' !important;':' border-bottom: none !important;')+' font-weight: 800 !important; }',
       'footer { background: '+(t.footer_bg||'#182f72')+' !important; }',
+      'body { background: #ffffff !important; }',
       '.footer-col-title { color: '+(t.footer_heading||'#ffffff')+' !important; }',
       '.footer-links li a { color: '+(t.footer_link||'rgba(255,255,255,0.75)')+' !important; }',
       '.footer-contact p { color: '+(t.footer_text||'rgba(255,255,255,0.75)')+' !important; }',
