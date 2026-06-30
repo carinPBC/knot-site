@@ -389,3 +389,7 @@ nav.main-nav {
 .footer-right-group .footer-col ul {
   white-space: nowrap;
 }
+
+/* ── FOOTER PADDING ──────────────────────────────────────────── */
+.footer-grid { padding-bottom: 16px !important; }
+footer { padding-bottom: 0 !important; }

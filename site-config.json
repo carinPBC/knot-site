@@ -79,10 +79,6 @@
             "url": "pages/about.html"
           },
           {
-            "label": "Shows",
-            "url": "pages/shows.html"
-          },
-          {
             "label": "EEO Public File",
             "url": "pages/eeo.html"
           },
@@ -97,10 +93,6 @@
           {
             "label": "Employment",
             "url": "pages/employment.html"
-          },
-          {
-            "label": "Prescott Broadcasting",
-            "url": "https://prescottbroadcasting.com"
           }
         ]
       }
