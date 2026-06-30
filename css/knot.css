@@ -11,6 +11,7 @@
 #hero-section { background: none; }
 
 body { background: #ffffff !important; }
+nav.main-nav, .main-nav { background: #ffffff !important; }
 
 :root {
   --accent:    #182f72;
@@ -32,7 +33,7 @@ nav.main-nav { background: #ffffff !important; }
   border-bottom: 3px solid #eb3945 !important;
   font-weight: 800 !important;
 }
-.nav-logo img { height: 150px; padding: 24px 0; }
+.nav-logo img { height: 150px !important; padding: 24px 0 !important; }
 
 /* Listen Live button */
 .listen-btn {

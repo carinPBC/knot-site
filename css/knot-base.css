@@ -11,8 +11,8 @@
   --navy-mid:   #1e3a5f;
   --red:        #c0392b;
   --red-dark:   #a93226;
-  --cream:      #faf3e6;  /* = header bg */
-  --cream-dark: #ede7d8;
+  --cream:      #ffffff;  /* KNOT: white */
+  --cream-dark: #f0f0f0;  /* KNOT: light grey */
   --gold:       #b8860b;
   --white:      #ffffff;
   --gray-light: #f0ece4;
@@ -35,7 +35,7 @@
 body {
   font-family: var(--font-sans);
   color: var(--text-dark);
-  background: var(--cream);
+  background: #ffffff;
   line-height: 1.6;
   min-height: 100vh;
 }
@@ -74,9 +74,10 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
 }
 .nav-logo img {
-  height: 110px;
+  height: 150px;
   width: auto;
   object-fit: contain;
+  padding: 24px 0;
 }
 
 /* Nav links + actions — right side, stacked: links on top, socials below */
