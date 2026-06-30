@@ -32,7 +32,7 @@ nav.main-nav { background: #ffffff !important; }
   border-bottom: 3px solid #eb3945 !important;
   font-weight: 800 !important;
 }
-.nav-logo img { height: 120px; padding: 12px 0; }
+.nav-logo img { height: 150px; padding: 24px 0; }
 
 /* Listen Live button */
 .listen-btn {
