@@ -75,10 +75,6 @@
         "title": "Station Info",
         "links": [
           {
-            "label": "About KNOT",
-            "url": "pages/about.html"
-          },
-          {
             "label": "EEO Public File",
             "url": "pages/eeo.html"
           },
@@ -87,7 +83,7 @@
             "url": "pages/fcc.html"
           },
           {
-            "label": "Public Inspection File",
+            "label": "Public Inspection File Help",
             "url": "pages/public-inspection-help.html"
           },
           {
