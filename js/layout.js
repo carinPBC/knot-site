@@ -95,6 +95,7 @@
       +     '<div class="footer-tagline">'+st.frequency+'<br>'+st.tagline+'</div>'
       +     '<div class="footer-social" style="margin-top:12px">'+socialHTML(cfg.site.social)+'</div>'
       +   '</div>'
+      +   '<div class="footer-right-group">'
       +   cols
       +   '<div class="footer-col footer-contact">'
       +     '<div class="footer-col-title">Contact Us</div>'
@@ -106,6 +107,7 @@
       +       '<a href="'+st.listenUrl+'" target="_blank" class="listen-btn">((&#x2022;)) LISTEN LIVE</a>'
       +     '</div>'
       +   '</div>'
+      + '</div>'
       + '</div>'
       + '<div class="footer-legal">'
       +   '<span>'+cfg.footer.legal.copyright+'</span>'

@@ -364,3 +364,28 @@ nav.main-nav {
 .footer-grid {
   grid-template-columns: auto 1fr 1fr !important;
 }
+
+/* ── FOOTER LAYOUT ───────────────────────────────────────────── */
+/* Logo stays left, everything else pushed right */
+.footer-grid {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+}
+.footer-logo-col {
+  flex-shrink: 0 !important;
+}
+.footer-right-group {
+  display: flex;
+  gap: 48px;
+  margin-left: auto;
+  align-items: flex-start;
+}
+/* Tighter column widths */
+.footer-right-group .footer-col {
+  min-width: 0 !important;
+  width: auto !important;
+}
+.footer-right-group .footer-col ul {
+  white-space: nowrap;
+}
