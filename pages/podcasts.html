@@ -180,7 +180,7 @@ fetch(API_URL+"/api/pages/podcasts").then(function(r){return r.json();}).then(fu
   var container = document.getElementById('podcasts-container');
   if (!container) return;
 
-  fetch(API_URL + '/api/podcasts?limit=500&station_id=knot')
+  fetch(API_URL + '/api/podcasts?limit=500')
     .then(function(r) { return r.json(); })
     .then(function(episodes) {
       if (!episodes.length) {
