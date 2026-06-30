@@ -209,7 +209,15 @@ function renderSection(s, i) {
       + '</div></div>';
   }
 
-  // Standard content section (image + text)
+  // Standard content section — centered single col if no image, two-col if image
+  if (!imgHtml) {
+    return '<div class="editorial-section" style="' + secStyle + '">'
+      + '<div style="max-width:860px;margin:0 auto;padding:48px 24px;">'
+      + (s.heading ? '<' + hTag + ' style="' + hStyle + '">' + s.heading + '</' + hTag + '>' + sepHtml : '')
+      + bodyHtml
+      + ctaHtml
+      + '</div></div>';
+  }
   return '<div class="editorial-section" style="' + secStyle + '"><div class="editorial-grid' + rev + '">'
     + '<div class="editorial-text">'
     + (s.heading ? '<' + hTag + ' style="' + hStyle + '">' + s.heading + '</' + hTag + '>' + sepHtml : '')
