@@ -52,7 +52,7 @@ a { color: inherit; text-decoration: none; }
 
 /* Single nav bar — matches hero bg exactly, no border/shadow, seamless */
 .main-nav {
-  background: #faf3e6 !important;
+  background: #ffffff !important;
   position: sticky;
   top: 0;
   z-index: 1000;

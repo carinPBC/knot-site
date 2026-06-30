@@ -26,7 +26,7 @@
     .cal-btn:hover{background:#f4f6f8;}
     /* Fixed-width 7-column calendar */
     .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid #e8ecf0;border-top:1px solid #e8ecf0;margin-bottom:40px;}
-    .cal-dow{text-align:center;font-size:11px;font-weight:700;color:#546e7a;text-transform:uppercase;padding:10px 4px;background:#f8f9fa;border-right:1px solid #e8ecf0;border-bottom:1px solid #e8ecf0;}
+    .cal-dow{text-align:center;font-size:11px;font-weight:700;color:#546e7a;text-transform:uppercase;padding:10px 4px;background:#ffffff;border-right:1px solid #e8ecf0;border-bottom:1px solid #e8ecf0;}
     .cal-day{min-height:100px;padding:8px 6px;border-right:1px solid #e8ecf0;border-bottom:1px solid #e8ecf0;background:#fff;cursor:default;transition:background .12s;overflow:hidden;}
     .cal-day.other-month{background:#fafafa;}
     .cal-day.other-month .cal-day-num{color:#ccc;}
@@ -93,16 +93,16 @@
   </div>
 
   <!-- WEATHER BAND -->
-  <div id="knot-weather-band" style="background:#ffd300;border-bottom:1px solid rgba(255,255,255,0.08);overflow:hidden;height:120px;display:flex;align-items:center;">
+  <div id="knot-weather-band" style="background:#182f72;border-bottom:3px solid #ffd300;overflow:hidden;height:120px;display:flex;align-items:center;">
     <div style="flex:1;overflow:hidden;height:95px;position:relative;margin-top:4px;">
-      <a class="weatherwidget-io" href="https://forecast7.com/en/34d54n112d47/prescott/?unit=us" data-label_1="PRESCOTT" data-label_2="WEATHER" data-theme="original" data-basecolor="#ffd300" data-days="7">PRESCOTT WEATHER</a>
+      <a class="weatherwidget-io" href="https://forecast7.com/en/34d54n112d47/prescott/?unit=us" data-label_1="PRESCOTT" data-label_2="WEATHER" data-theme="original" data-basecolor="#182f72" data-days="7">PRESCOTT WEATHER</a>
     </div>
     <div id="knot-weather-report" style="flex-shrink:0;display:none;align-items:center;gap:8px;padding:0 20px;border-left:1px solid rgba(255,255,255,0.1);min-width:520px;background:#032a48;">
       <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);">&#127925; Today&#39;s Report</span>
       <div id="knot-weather-player"></div>
     </div>
   </div>
-  <div id="knot-ad-banner" style="display:none;text-align:center;padding:12px 0;background:#f8f9fa;border-bottom:1px solid #e8ecf0;"></div>
+  <div id="knot-ad-banner" style="display:none;text-align:center;padding:12px 0;background:#ffffff;border-bottom:1px solid #e8ecf0;"></div>
   </div>
   <div class="page-hero">
     <h1>Events</h1>
