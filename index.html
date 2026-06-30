@@ -188,7 +188,7 @@
       grid.innerHTML = items.map(function(n) {
         var img = n.image ? (n.image.startsWith('http') ? n.image : n.image.startsWith('/uploads/') ? 'https://pbc-cms-production.up.railway.app' + n.image : n.image.startsWith('uploads/') ? 'https://pbc-cms-production.up.railway.app/' + n.image : 'images/news-placeholder.png') : 'images/news-placeholder.png';
         var date = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-        return '<a href="pages/news.html" class="news-card" style="text-decoration:none;">'
+        return '<a href="pages/article.html?id='+n.id+'" class="news-card" style="text-decoration:none;">'
           + '<div class="news-card-img-wrap"><img src="'+img+'" class="news-card-img" alt="'+n.headline+'" onerror="this.src=\'images/news-placeholder.png\'" /></div>'
           + '<div class="news-card-body">'
           + (n.category ? '<div class="news-card-cat">'+n.category+'</div>' : '')
