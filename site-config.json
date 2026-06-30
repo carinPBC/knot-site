@@ -1,7 +1,7 @@
 {
   "site": {
-    "name": "KNOT Radio",
-    "tagline": "YOUR MUSIC. YOUR COMMUNITY.",
+    "name": "The Team 1450 KNOT",
+    "tagline": "PRESCOTT'S SPORTS RADIO",
     "stationId": "knot",
     "logo": "images/logo-knot.png",
     "logoWhite": "images/logo-knot-white.png",
@@ -17,9 +17,9 @@
   "station": {
     "id": "knot",
     "name": "KNOT",
-    "fullName": "KNOT Radio",
-    "frequency": "",
-    "tagline": "Prescott's Radio Station",
+    "fullName": "The Team 1450 KNOT",
+    "frequency": "AM 1450",
+    "tagline": "Prescott's Sports Radio",
     "accentColor": "#182f72",
     "listenUrl": "",
     "phone": "(928) 445-1700",
@@ -31,15 +31,42 @@
   },
   "nav": {
     "links": [
-      { "label": "Home",     "url": "/index.html" },
-      { "label": "News",     "url": "/pages/news.html" },
-      { "label": "Events",   "url": "/pages/events.html" },
-      { "label": "Podcasts", "url": "/pages/podcasts.html" },
-      { "label": "Schedule", "url": "/pages/schedule.html" },
-      { "label": "Shows",    "url": "/pages/shows.html" },
-      { "label": "Advertise","url": "/pages/advertise.html" },
-      { "label": "About",    "url": "/pages/about.html" },
-      { "label": "Contact",  "url": "/pages/contact.html" }
+      {
+        "label": "Home",
+        "url": "/index.html"
+      },
+      {
+        "label": "News",
+        "url": "/pages/news.html"
+      },
+      {
+        "label": "Events",
+        "url": "/pages/events.html"
+      },
+      {
+        "label": "Podcasts",
+        "url": "/pages/podcasts.html"
+      },
+      {
+        "label": "Schedule",
+        "url": "/pages/schedule.html"
+      },
+      {
+        "label": "Shows",
+        "url": "/pages/shows.html"
+      },
+      {
+        "label": "Advertise",
+        "url": "/pages/advertise.html"
+      },
+      {
+        "label": "About",
+        "url": "/pages/about.html"
+      },
+      {
+        "label": "Contact",
+        "url": "/pages/contact.html"
+      }
     ]
   },
   "footer": {
@@ -47,24 +74,63 @@
       {
         "title": "Quick Links",
         "links": [
-          { "label": "News",      "url": "pages/news.html" },
-          { "label": "Events",    "url": "pages/events.html" },
-          { "label": "Podcasts",  "url": "pages/podcasts.html" },
-          { "label": "Schedule",  "url": "pages/schedule.html" },
-          { "label": "Advertise", "url": "pages/advertise.html" },
-          { "label": "Contact",   "url": "pages/contact.html" }
+          {
+            "label": "News",
+            "url": "pages/news.html"
+          },
+          {
+            "label": "Events",
+            "url": "pages/events.html"
+          },
+          {
+            "label": "Podcasts",
+            "url": "pages/podcasts.html"
+          },
+          {
+            "label": "Schedule",
+            "url": "pages/schedule.html"
+          },
+          {
+            "label": "Advertise",
+            "url": "pages/advertise.html"
+          },
+          {
+            "label": "Contact",
+            "url": "pages/contact.html"
+          }
         ]
       },
       {
         "title": "Station Info",
         "links": [
-          { "label": "About KNOT",              "url": "pages/about.html" },
-          { "label": "Shows",                   "url": "pages/shows.html" },
-          { "label": "EEO Public File",         "url": "pages/eeo.html" },
-          { "label": "FCC Applications",        "url": "pages/fcc.html" },
-          { "label": "Public Inspection File",  "url": "pages/public-inspection-help.html" },
-          { "label": "Employment",              "url": "pages/employment.html" },
-          { "label": "Prescott Broadcasting",   "url": "https://prescottbroadcasting.com" }
+          {
+            "label": "About KNOT",
+            "url": "pages/about.html"
+          },
+          {
+            "label": "Shows",
+            "url": "pages/shows.html"
+          },
+          {
+            "label": "EEO Public File",
+            "url": "pages/eeo.html"
+          },
+          {
+            "label": "FCC Applications",
+            "url": "pages/fcc.html"
+          },
+          {
+            "label": "Public Inspection File",
+            "url": "pages/public-inspection-help.html"
+          },
+          {
+            "label": "Employment",
+            "url": "pages/employment.html"
+          },
+          {
+            "label": "Prescott Broadcasting",
+            "url": "https://prescottbroadcasting.com"
+          }
         ]
       }
     ],
