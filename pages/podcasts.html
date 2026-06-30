@@ -109,7 +109,7 @@ function renderSection(s, i) {
   // Image
   var imgHtml = '';
   if (s.image && !isHeader && !isTextOnly) {
-    var imgSrc = s.image.startsWith('uploads/') ? API_URL + '/' + s.image : '../' + s.image;
+    var imgSrc = s.image.startsWith('http') ? s.image : s.image.startsWith('uploads/') ? API_URL + '/' + s.image : '../' + s.image;
     imgHtml = '<img class="editorial-img" src="' + imgSrc + '" alt="' + (s.heading||'') + '" />';
   }
 
@@ -202,7 +202,7 @@ fetch(API_URL+"/api/pages/podcasts").then(function(r){return r.json();}).then(fu
           ? '<span class="show-group-station">' + show.station.toUpperCase() + '</span>' : '';
         var cards = show.episodes.map(function(ep) {
           var thumb = ep.image
-            ? '<img class="pod-thumb" src="' + (ep.image.startsWith('uploads/') ? API_URL + '/' + ep.image : '../' + ep.image) + '" alt="' + ep.show_name + '" />'
+            ? '<img class="pod-thumb" src="' + (ep.image.startsWith('http') ? ep.image : ep.image.startsWith('uploads/') ? API_URL + '/' + ep.image : '../' + ep.image) + '" alt="' + ep.show_name + '" />'
             : '<div class="pod-thumb pod-thumb-placeholder"></div>';
           var listenBtn = ep.audio_url
             ? '<a href="' + ep.audio_url + '" target="_blank" class="pod-listen">&#9654; Listen</a>' : '';

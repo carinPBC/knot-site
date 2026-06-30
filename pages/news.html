@@ -100,7 +100,7 @@
       }
       grid.innerHTML = items.map(function(n) {
         var img = n.image
-          ? (n.image.startsWith('/uploads/') ? n.image : (n.image.startsWith('uploads/') ? '/' + n.image : '../' + n.image))
+          ? (n.image.startsWith('http') ? n.image : n.image.startsWith('/uploads/') ? 'https://pbc-cms-production.up.railway.app' + n.image : n.image.startsWith('uploads/') ? 'https://pbc-cms-production.up.railway.app/' + n.image : '../images/news-placeholder.png')
           : '../images/news-placeholder.png';
         var date = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
         var station = '';
