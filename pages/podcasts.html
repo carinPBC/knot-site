@@ -181,46 +181,36 @@ fetch(API_URL+"/api/pages/podcasts").then(function(r){return r.json();}).then(fu
   var container = document.getElementById('podcasts-container');
   if (!container) return;
 
-  // Fetch shows + episodes together to build name→id map for linking
-  Promise.all([
-    fetch(API_URL + '/api/podcasts?limit=500').then(function(r){ return r.json(); }),
-    fetch(API_URL + '/api/schedule/kyca').then(function(r){ return r.json(); }).then(function(d){ return d.shows || []; }).catch(function(){ return []; })
-  ]).then(function(results) {
-    var episodes = results[0];
-    var showsRaw = results[1];
-    var shows = Array.isArray(showsRaw) ? showsRaw : [];
-
-    // Build show name → id map
-    var showIdMap = {};
-    shows.forEach(function(s) { showIdMap[(s.name||'').toLowerCase()] = s.id; });
-
-    if (!episodes.length) {
-      container.innerHTML = '<p style="text-align:center;padding:60px;color:#546e7a;">No podcasts available yet.</p>';
-      return;
-    }
-    var cards = episodes.map(function(ep) {
-      var showId = showIdMap[(ep.show_name||'').toLowerCase()];
-      var cardUrl = showId ? 'show.html?id=' + showId : (ep.audio_url || '#');
-      var thumb = ep.image
-        ? '<img class="pod-thumb" src="' + (ep.image.startsWith('http') ? ep.image : ep.image.startsWith('uploads/') ? API_URL + '/' + ep.image : '../' + ep.image) + '" alt="' + (ep.show_name||'').replace(/"/g,'&quot;') + '" />'
-        : '<div class="pod-thumb pod-thumb-placeholder"></div>';
-      var listenBtn = ep.audio_url
-        ? '<a href="' + ep.audio_url + '" target="_blank" class="pod-listen" onclick="event.stopPropagation();">&#9654; Listen</a>' : '';
-      var date = ep.published_at ? new Date(ep.published_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) : '';
-      return '<a class="pod-card" href="' + cardUrl + '" style="text-decoration:none;">'
-        + thumb
-        + '<div class="pod-body">'
-        + '<div class="pod-show">' + (ep.show_name||'') + '</div>'
-        + (ep.episode_num ? '<div class="pod-date">EP ' + ep.episode_num + (date ? ' · ' + date : '') + '</div>' : (date ? '<div class="pod-date">' + date + '</div>' : ''))
-        + '<div class="pod-title">' + (ep.episode_title || ep.show_name) + '</div>'
-        + (ep.description ? '<div class="pod-desc">' + ep.description + '</div>' : '')
-        + listenBtn
-        + '</div></a>';
-    }).join('');
-    container.innerHTML = '<div class="pod-grid">' + cards + '</div>';
-  }).catch(function() {
-    container.innerHTML = '<p style="text-align:center;padding:60px;color:#546e7a;">Unable to load podcasts. Please try again.</p>';
-  });
+  fetch(API_URL + '/api/podcasts?limit=500')
+    .then(function(r) { return r.json(); })
+    .then(function(episodes) {
+      if (!episodes.length) {
+        container.innerHTML = '<p style="text-align:center;padding:60px;color:#546e7a;">No podcasts available yet.</p>';
+        return;
+      }
+      var cards = episodes.map(function(ep) {
+        var cardUrl = 'show.html?id=' + ep.id;
+        var thumb = ep.image
+          ? '<img class="pod-thumb" src="' + (ep.image.startsWith('http') ? ep.image : ep.image.startsWith('uploads/') ? API_URL + '/' + ep.image : '../' + ep.image) + '" alt="' + (ep.show_name||'').replace(/"/g,'&quot;') + '" />'
+          : '<div class="pod-thumb pod-thumb-placeholder"></div>';
+        var listenBtn = ep.audio_url
+          ? '<a href="' + ep.audio_url + '" target="_blank" class="pod-listen" onclick="event.stopPropagation();">&#9654; Listen</a>' : '';
+        var date = ep.published_at ? new Date(ep.published_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) : '';
+        return '<a class="pod-card" href="' + cardUrl + '" style="text-decoration:none;">'
+          + thumb
+          + '<div class="pod-body">'
+          + '<div class="pod-show">' + (ep.show_name||'') + '</div>'
+          + (ep.episode_num ? '<div class="pod-date">EP ' + ep.episode_num + (date ? ' · ' + date : '') + '</div>' : (date ? '<div class="pod-date">' + date + '</div>' : ''))
+          + '<div class="pod-title">' + (ep.episode_title || ep.show_name) + '</div>'
+          + (ep.description ? '<div class="pod-desc">' + ep.description + '</div>' : '')
+          + listenBtn
+          + '</div></a>';
+      }).join('');
+      container.innerHTML = '<div class="pod-grid">' + cards + '</div>';
+    })
+    .catch(function() {
+      container.innerHTML = '<p style="text-align:center;padding:60px;color:#546e7a;">Unable to load podcasts. Please try again.</p>';
+    });
 })();
 
 </script>
