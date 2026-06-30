@@ -184,11 +184,11 @@ fetch(API_URL+"/api/pages/podcasts").then(function(r){return r.json();}).then(fu
   // Fetch shows + episodes together to build name→id map for linking
   Promise.all([
     fetch(API_URL + '/api/podcasts?limit=500').then(function(r){ return r.json(); }),
-    fetch(API_URL + '/api/shows?limit=500').then(function(r){ return r.json(); }).catch(function(){ return []; })
+    fetch(API_URL + '/api/schedule/kyca').then(function(r){ return r.json(); }).then(function(d){ return d.shows || []; }).catch(function(){ return []; })
   ]).then(function(results) {
     var episodes = results[0];
     var showsRaw = results[1];
-    var shows = Array.isArray(showsRaw) ? showsRaw : (showsRaw.shows || []);
+    var shows = Array.isArray(showsRaw) ? showsRaw : [];
 
     // Build show name → id map
     var showIdMap = {};
