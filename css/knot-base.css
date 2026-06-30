@@ -64,7 +64,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 120px;
+  min-height: 200px;
 }
 
 /* Logo — large illustrated logo, transparent bg, left side */
