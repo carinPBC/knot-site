@@ -77,6 +77,7 @@
     .editorial-section{padding:48px 0;border-bottom:1px solid #e8ecf0;}
     .editorial-section:last-child{border-bottom:none;}
     .editorial-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+    .editorial-grid:not(:has(.editorial-img)){grid-template-columns:1fr;max-width:860px;margin:0 auto;}
     .editorial-grid.reverse{direction:rtl;}.editorial-grid.reverse>*{direction:ltr;}
     .editorial-text h2{font-size:clamp(24px,3vw,36px);font-weight:900;color:#032a48;text-transform:uppercase;letter-spacing:.03em;margin-bottom:16px;line-height:1.15;}
     .editorial-text h2::after{content:'';display:block;width:48px;height:4px;background:#182f72;margin-top:10px;}
@@ -133,6 +134,9 @@
     .iq-submit:hover { background: #a93226; transform: translateY(-1px); }
     .iq-submit:active { transform: translateY(0); }
     .iq-disclaimer { font-size: 12px; color: #90a4ae; line-height: 1.5; max-width: 400px; }
+    /* Full-width section when no image */
+    .editorial-section > .editorial-grid { max-width: 1200px; margin: 0 auto; }
+    .editorial-text-only { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
     .iq-success { display: none; text-align: center; padding: 48px 24px; }
     .iq-success-icon { font-size: 48px; margin-bottom: 16px; }
     .iq-success h3 { font-size: 22px; font-weight: 800; color: #032a48; margin-bottom: 8px; }
@@ -492,7 +496,15 @@ function renderSection(s, i) {
       + '</div></div>';
   }
 
-  // Standard content section (image + text)
+  // Standard content section (image + text, or centered single col if no image)
+  if (!imgHtml) {
+    return '<div class="editorial-section" style="' + secStyle + '">'
+      + '<div style="max-width:860px;margin:0 auto;padding:48px 24px;">'
+      + (s.heading ? '<' + hTag + ' style="' + hStyle + '">' + s.heading + '</' + hTag + '>' + sepHtml : '')
+      + bodyHtml
+      + ctaHtml
+      + '</div></div>';
+  }
   return '<div class="editorial-section" style="' + secStyle + '"><div class="editorial-grid' + rev + '">'
     + '<div class="editorial-text">'
     + (s.heading ? '<' + hTag + ' style="' + hStyle + '">' + s.heading + '</' + hTag + '>' + sepHtml : '')
