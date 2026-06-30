@@ -180,20 +180,22 @@ nav.main-nav { background: #ffffff !important; }
 
 /* ── WEATHER BAND ──────────────────────────────────────────────── */
 #knot-weather-band {
-  background: #182f72 !important;
-  border-bottom: 10px solid #ffd300 !important;
+  background: #ffd300 !important;
   overflow: hidden !important;
-  height: 90px !important;
+  height: 100px !important;
   display: flex !important;
-  align-items: flex-start !important;
+  align-items: center !important;
+  padding: 8px 12px !important;
 }
-#knot-weather-band > div:first-child,
-#knot-weather-band > div:nth-child(2) {
+/* Blue widget container inset inside yellow band */
+#knot-weather-band > div:first-child {
   flex: 1;
   overflow: hidden;
-  height: 100px !important;
+  height: 84px !important;
   position: relative;
-  margin-top: -14px !important;
+  background: #182f72;
+  border-radius: 4px;
+  margin-top: -8px !important;
 }
 
 /* Schedule */
