@@ -182,7 +182,7 @@ nav.main-nav { background: #ffffff !important; }
 #knot-weather-band {
   background: #ffd300 !important;
   overflow: hidden !important;
-  height: 100px !important;
+  height: 116px !important;
   display: flex !important;
   align-items: center !important;
   padding: 8px 12px !important;
@@ -191,7 +191,7 @@ nav.main-nav { background: #ffffff !important; }
 #knot-weather-band > div:first-child {
   flex: 1;
   overflow: hidden;
-  height: 84px !important;
+  height: 100px !important;
   position: relative;
   background: #182f72;
   border-radius: 4px;
