@@ -1,0 +1,2 @@
+# Redirect www to apex (update once domain is known)
+# https://www.knot.com/* https://knot.com/:splat 301

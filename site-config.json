@@ -1,0 +1,77 @@
+{
+  "site": {
+    "name": "KNOT Radio",
+    "tagline": "YOUR MUSIC. YOUR COMMUNITY.",
+    "stationId": "knot",
+    "logo": "images/logo-knot.png",
+    "logoWhite": "images/logo-knot-white.png",
+    "favicon": "images/logo-knot.png",
+    "apiBase": "https://pbc-cms-production.up.railway.app",
+    "social": {
+      "facebook": "https://facebook.com/prescottbroadcasting",
+      "instagram": "https://instagram.com/prescottbroadcasting",
+      "youtube": "https://youtube.com/prescottbroadcasting",
+      "email": "mailto:knot@prescottbroadcasting.com"
+    }
+  },
+  "station": {
+    "id": "knot",
+    "name": "KNOT",
+    "fullName": "KNOT Radio",
+    "frequency": "",
+    "tagline": "Prescott's Radio Station",
+    "accentColor": "#182f72",
+    "listenUrl": "",
+    "phone": "(928) 445-1700",
+    "email": "knot@prescottbroadcasting.com",
+    "address": "500 Henry Street",
+    "city": "Prescott, Arizona 86301",
+    "streamUrl": "",
+    "playerUrl": ""
+  },
+  "nav": {
+    "links": [
+      { "label": "Home",     "url": "/index.html" },
+      { "label": "News",     "url": "/pages/news.html" },
+      { "label": "Events",   "url": "/pages/events.html" },
+      { "label": "Podcasts", "url": "/pages/podcasts.html" },
+      { "label": "Schedule", "url": "/pages/schedule.html" },
+      { "label": "Shows",    "url": "/pages/shows.html" },
+      { "label": "Advertise","url": "/pages/advertise.html" },
+      { "label": "About",    "url": "/pages/about.html" },
+      { "label": "Contact",  "url": "/pages/contact.html" }
+    ]
+  },
+  "footer": {
+    "columns": [
+      {
+        "title": "Quick Links",
+        "links": [
+          { "label": "News",      "url": "pages/news.html" },
+          { "label": "Events",    "url": "pages/events.html" },
+          { "label": "Podcasts",  "url": "pages/podcasts.html" },
+          { "label": "Schedule",  "url": "pages/schedule.html" },
+          { "label": "Advertise", "url": "pages/advertise.html" },
+          { "label": "Contact",   "url": "pages/contact.html" }
+        ]
+      },
+      {
+        "title": "Station Info",
+        "links": [
+          { "label": "About KNOT",              "url": "pages/about.html" },
+          { "label": "Shows",                   "url": "pages/shows.html" },
+          { "label": "EEO Public File",         "url": "pages/eeo.html" },
+          { "label": "FCC Applications",        "url": "pages/fcc.html" },
+          { "label": "Public Inspection File",  "url": "pages/public-inspection-help.html" },
+          { "label": "Employment",              "url": "pages/employment.html" },
+          { "label": "Prescott Broadcasting",   "url": "https://prescottbroadcasting.com" }
+        ]
+      }
+    ],
+    "legal": {
+      "copyright": "\u00a9 2026 Prescott Broadcasting, LLC. All Rights Reserved.",
+      "privacyPolicyUrl": "/pages/privacy.html",
+      "termsUrl": "/pages/terms.html"
+    }
+  }
+}

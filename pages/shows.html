@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shows — KNOT Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/knot-base.css" />
+  <link rel="stylesheet" href="../css/knot.css" />
+  <style id="nav-critical">
+    nav.main-nav{background:#ffffff !important;position:sticky !important;top:0 !important;z-index:9999 !important;}
+    .main-nav-inner{width:100%;padding:0 48px;display:flex;align-items:center;justify-content:space-between;min-height:100px;}
+    .nav-logo img{height:180px;width:auto;object-fit:contain;}
+    .nav-search{background:none;border:none;cursor:pointer;color:#182f72;padding:6px;display:flex;align-items:center;}
+    .nav-hamburger{display:none;background:none;border:none;cursor:pointer;color:#182f72;padding:6px;}
+    @media(max-width:900px){.main-nav-inner{padding:0 20px;}}
+    @media(max-width:640px){.nav-links-wrap{display:none !important;}.nav-hamburger{display:flex !important;}}
+  </style>
+  <style>
+    .shows-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+      padding: 40px 48px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+    .show-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .show-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.12); }
+    .show-card-header {
+      padding: 20px 20px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .show-color-bar {
+      width: 6px;
+      border-radius: 3px;
+      align-self: stretch;
+      flex-shrink: 0;
+    }
+    .show-card-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #032a48;
+      line-height: 1.3;
+      text-align: left;
+    }
+    .show-card-times {
+      font-size: 11px;
+      font-weight: 700;
+      color: #c0392b;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-top: 3px;
+      text-align: left;
+    }
+    .show-card-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #e8ecf0;
+    }
+    .show-card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .show-card-body {
+      padding: 16px 20px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .show-card-desc {
+      font-size: 14px;
+      color: #546e7a;
+      line-height: 1.7;
+      flex: 1;
+      text-align: left;
+    }
+    .show-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #c0392b;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .show-card-link:hover { text-decoration: underline; }
+    @media (max-width: 768px) {
+      .shows-grid { padding: 24px 16px; grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .shows-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  </div>
+
+
+  <!-- WEATHER BAND -->
+  <div id="knot-weather-band" style="background:#ffd300;border-bottom:1px solid rgba(255,255,255,0.08);overflow:hidden;height:120px;display:flex;align-items:center;">
+    <div style="flex:1;overflow:hidden;height:95px;position:relative;margin-top:4px;">
+      <a class="weatherwidget-io" href="https://forecast7.com/en/34d54n112d47/prescott/?unit=us" data-label_1="PRESCOTT" data-label_2="WEATHER" data-theme="original" data-basecolor="#ffd300" data-days="7">PRESCOTT WEATHER</a>
+    </div>
+    <div id="knot-weather-report" style="flex-shrink:0;display:none;align-items:center;gap:8px;padding:0 20px;border-left:1px solid rgba(255,255,255,0.1);min-width:520px;background:#032a48;">
+      <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);">&#127925; Today&#39;s Report</span>
+      <div id="knot-weather-player"></div>
+    </div>
+  </div>
+  <div id="knot-ad-banner" style="display:none;text-align:center;padding:12px 0;background:#f8f9fa;border-bottom:1px solid #e8ecf0;"></div>
+  </div>
+
+  <div class="page-hero">
+    <h1>Shows</h1>
+    <p>Meet the voices of KNOT Radio.</p>
+  </div>
+
+  <div id="shows-content">
+    <div style="text-align:center;padding:48px;color:#546e7a;">Loading shows…</div>
+  </div>
+
+  <div id="site-footer"></div>
+  <script src="../js/layout.js" data-depth="1"></script>
+  <script>
+  (function() {
+    var API = 'https://pbc-cms-production.up.railway.app';
+
+    fetch(API + '/api/schedule/knot')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var shows = d.shows || [];
+        var slots = d.slots || [];
+        var el = document.getElementById('shows-content');
+
+        // Filter to shows that have either a description or image (i.e. featured shows)
+        // Fall back to showing all shows if none have been enriched yet
+        var featured = shows.filter(function(s) { return s.description || s.image; });
+        var displayShows = featured.length ? featured : shows;
+
+        if (!displayShows.length) {
+          el.innerHTML = '<div style="text-align:center;padding:48px;color:#546e7a;">Shows coming soon.</div>';
+          return;
+        }
+
+        // Build time summary per show from slots
+        function fmtHour(h) {
+          if (h === 0 || h === 24) return '12:00 AM';
+          if (h === 12) return '12:00 PM';
+          return h < 12 ? h + ':00 AM' : (h - 12) + ':00 PM';
+        }
+
+        var showTimes = {};
+        // Group slots by show
+        var rawSlots = {};
+        slots.forEach(function(slot) {
+          if (!rawSlots[slot.show_id]) rawSlots[slot.show_id] = [];
+          rawSlots[slot.show_id].push(slot);
+        });
+
+        Object.keys(rawSlots).forEach(function(showId) {
+          var slotsForShow = rawSlots[showId];
+          var entries = [];
+          var skipTueFri = {}; // tue-fri slot ids already merged into Mon-Fri
+
+          // Process mon slots first — check if matching tue-fri exists
+          slotsForShow.forEach(function(slot) {
+            if (slot.day_group !== 'mon') return;
+            var timeStr = fmtHour(slot.start_hour) + ' – ' + fmtHour(slot.end_hour);
+            var match = slotsForShow.find(function(s) {
+              return s.day_group === 'tue-fri' && s.start_hour === slot.start_hour && s.end_hour === slot.end_hour;
+            });
+            if (match) {
+              entries.push('Mon–Fri · ' + timeStr);
+              skipTueFri[match.id] = true;
+            } else {
+              entries.push('Monday · ' + timeStr);
+            }
+          });
+
+          // Process tue-fri slots not already merged
+          slotsForShow.forEach(function(slot) {
+            if (slot.day_group !== 'tue-fri') return;
+            if (skipTueFri[slot.id]) return;
+            var timeStr = fmtHour(slot.start_hour) + ' – ' + fmtHour(slot.end_hour);
+            entries.push('Tue–Fri · ' + timeStr);
+          });
+
+          // Sat + Sun
+          slotsForShow.forEach(function(slot) {
+            if (slot.day_group !== 'sat' && slot.day_group !== 'sun') return;
+            var dayLabel = slot.day_group === 'sat' ? 'Saturday' : 'Sunday';
+            var timeStr = fmtHour(slot.start_hour) + ' – ' + fmtHour(slot.end_hour);
+            entries.push(dayLabel + ' · ' + timeStr);
+          });
+
+          showTimes[showId] = entries;
+        });
+
+        el.innerHTML = '<div class="shows-grid">'
+          + displayShows.map(function(s) {
+            var imgSrc = s.image
+              ? (s.image.startsWith('/uploads/') ? s.image : (s.image.startsWith('http') ? s.image : '/uploads/' + s.image.split('/').pop()))
+              : null;
+            var times = showTimes[s.id] ? showTimes[s.id].join('<br>') : '';
+            return '<div class="show-card">'
+              + (imgSrc ? '<div class="show-card-img-wrap"><img src="'+imgSrc+'" alt="'+s.name+'" onerror="this.parentNode.style.display=\'none\'" /></div>' : '')
+              + '<div class="show-card-header">'
+              + '<div class="show-color-bar" style="background:'+s.color+';"></div>'
+              + '<div>'
+              + '<div class="show-card-name">'+s.name+'</div>'
+              + (times ? '<div class="show-card-times">'+times+'</div>' : '')
+              + '</div></div>'
+              + '<div class="show-card-body">'
+              + (s.description ? '<div class="show-card-desc">'+s.description+'</div>' : '')
+              + (s.link_url ? '<a href="'+s.link_url+'" target="_blank" class="show-card-link">Learn More &rsaquo;</a>' : '')
+              + '</div>'
+              + '</div>';
+          }).join('')
+          + '</div>';
+      })
+      .catch(function() {
+        document.getElementById('shows-content').innerHTML =
+          '<div style="text-align:center;padding:48px;color:#c0392b;">Could not load shows.</div>';
+      });
+  })();
+  </script>
+<script>
+(function() {
+  var s = document.getElementById('pbc-page-bg');
+  if (!s) { s = document.createElement('style'); s.id = 'pbc-page-bg'; document.head.appendChild(s); }
+  s.textContent = 'body, .page-hero, .content-wrap, .schedule-wrap, #shows-content { background: #f8f9fa !important; }';
+})();
+</script>
+<script src="../js/player.js"></script>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');</script>
+</body>
+</html>

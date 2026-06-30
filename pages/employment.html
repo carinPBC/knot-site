@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employment — KNOT Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/knot-base.css" /><link rel="stylesheet" href="../css/knot.css" />
+  <style id="nav-critical">
+    nav.main-nav{background:#ffffff !important;position:sticky !important;top:0 !important;z-index:9999 !important;}
+    .main-nav-inner{width:100%;padding:0 48px;display:flex;align-items:center;justify-content:space-between;min-height:100px;}
+    .nav-logo img{height:180px;width:auto;object-fit:contain;}
+    .nav-search{background:none;border:none;cursor:pointer;color:#182f72;padding:6px;display:flex;align-items:center;}
+    .nav-hamburger{display:none;background:none;border:none;cursor:pointer;color:#182f72;padding:6px;}
+    @media(max-width:900px){.main-nav-inner{padding:0 20px;}}
+    @media(max-width:640px){.nav-links-wrap{display:none !important;}.nav-hamburger{display:flex !important;}}
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <!-- WEATHER BAND -->
+  <div id="knot-weather-band" style="background:#ffd300;border-bottom:1px solid rgba(255,255,255,0.08);overflow:hidden;height:120px;display:flex;align-items:center;">
+    <div style="flex:1;overflow:hidden;height:95px;position:relative;margin-top:4px;">
+      <a class="weatherwidget-io" href="https://forecast7.com/en/34d54n112d47/prescott/?unit=us" data-label_1="PRESCOTT" data-label_2="WEATHER" data-theme="original" data-basecolor="#ffd300" data-days="7">PRESCOTT WEATHER</a>
+    </div>
+    <div id="knot-weather-report" style="flex-shrink:0;display:none;align-items:center;gap:8px;padding:0 20px;border-left:1px solid rgba(255,255,255,0.1);min-width:520px;background:#032a48;">
+      <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);">&#127925; Today&#39;s Report</span>
+      <div id="knot-weather-player"></div>
+    </div>
+  </div>
+
+  </div>
+  <div class="page-hero"><h1>Employment Opportunities</h1><p>Join the KNOT team.</p></div>
+  <div class="content-wrap"><div style="max-width:800px;">
+    <div id="emp-content">
+      <p style="font-size:16px;color:#546e7a;line-height:1.8;margin-bottom:32px;">
+        Prescott Broadcasting is an equal opportunity employer. We are committed to a diverse and inclusive workplace. Current openings at KNOT and our sister stations are listed below.
+      </p>
+      <div id="job-listings">
+        <div style="background:#fff;border-radius:10px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:800;color:#c0392b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">KNOT · Prescott, AZ</div>
+          <h3 style="font-size:18px;font-weight:700;color:#032a48;margin-bottom:8px;">Openings Posted Here</h3>
+          <p style="font-size:14px;color:#546e7a;line-height:1.7;">Current job openings will be listed here. To inquire about opportunities at KNOT or Prescott Broadcasting, please send your resume and cover letter to <a href="mailto:jobs@prescottbroadcasting.com" style="color:#c0392b;font-weight:600;">jobs@prescottbroadcasting.com</a>.</p>
+        </div>
+      </div>
+      <div style="margin-top:32px;padding:20px 24px;background:#f8f9fa;border-radius:8px;font-size:13px;color:#546e7a;">
+        <strong style="color:#032a48;">EEO Policy:</strong> Prescott Broadcasting, LLC is an equal opportunity employer and does not discriminate on the basis of race, color, religion, sex, national origin, age, disability, or any other characteristic protected by law.
+        <br><br>
+        <a href="fcc.html" style="color:#c0392b;font-weight:600;">View our FCC EEO Public File &rsaquo;</a>
+      </div>
+    </div>
+  </div></div>
+  <div id="site-footer"></div>
+  <script src="../js/layout.js" data-depth="1"></script>
+  
+<script>
+(function() {
+  var API = 'https://pbc-cms-production.up.railway.app';
+  fetch(API + '/api/pages/knot-employment')
+    .then(function(r) { return r.json(); })
+    .then(function(p) {
+      if (p.page_heading) {
+        var h1 = document.querySelector('.page-hero h1');
+        if (h1) h1.textContent = p.page_heading;
+      }
+      if (p.page_subheading) {
+        var sub = document.querySelector('.page-hero p');
+        if (sub) sub.textContent = p.page_subheading;
+      }
+      if (p.bg_color) {
+        var s = document.getElementById('pbc-page-bg');
+        if (!s) { s = document.createElement('style'); s.id = 'pbc-page-bg'; document.head.appendChild(s); }
+        s.textContent = 'body, .page-hero, .content-wrap, .schedule-wrap, #shows-content, .editorial-section { background: ' + p.bg_color + ' !important; }';
+      }
+    }).catch(function() {});
+})();
+</script>
+<script>
+(function() {
+  var API = 'https://pbc-cms-production.up.railway.app';
+  fetch(API + '/api/pages/knot-employment')
+    .then(function(r) { return r.json(); })
+    .then(function(p) {
+      if (p.bg_color) {
+        var s = document.getElementById('pbc-page-bg');
+        if (!s) { s = document.createElement('style'); s.id = 'pbc-page-bg'; document.head.appendChild(s); }
+        s.textContent = 'body, .page-hero, .content-wrap, .schedule-wrap, #shows-content, .editorial-section { background: ' + p.bg_color + ' !important; }';
+      }
+    }).catch(function() {});
+})();
+</script>
+<script src="../js/player.js"></script>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');</script>
+</body>
+</html>

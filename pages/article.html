@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article &mdash; KNOT Radio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/knot-base.css" />
+  <link rel="stylesheet" href="../css/knot.css" />
+  <style id="nav-critical">
+    nav.main-nav{background:#ffffff !important;position:sticky !important;top:0 !important;z-index:9999 !important;}
+    .main-nav-inner{width:100%;padding:0 48px;display:flex;align-items:center;justify-content:space-between;min-height:100px;}
+    .nav-logo img{height:180px;width:auto;object-fit:contain;}
+    .nav-search{background:none;border:none;cursor:pointer;color:#182f72;font-size:18px;padding:6px;display:flex;align-items:center;}
+    .nav-hamburger{display:none;background:none;border:none;cursor:pointer;color:#182f72;padding:6px;}
+    @media(max-width:900px){.main-nav-inner{padding:0 20px;}}
+    @media(max-width:640px){.nav-links-wrap{display:none !important;}.nav-hamburger{display:flex !important;}}
+  </style>
+  <style>
+    .article-wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+    .article-back { display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#c0392b;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;margin-bottom:28px; }
+    .article-back:hover { color:#a93226; }
+    .article-cat { font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#c0392b;margin-bottom:10px; }
+    .article-headline { font-size:clamp(26px,4vw,40px);font-weight:900;color:#032a48;line-height:1.15;margin-bottom:16px; }
+    .article-meta { display:flex;align-items:center;gap:16px;font-size:13px;color:#546e7a;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid #e8ecf0;flex-wrap:wrap; }
+    .article-img { width:100%;border-radius:8px;margin-bottom:28px;max-height:400px;object-fit:cover; }
+    .article-body { font-size:16px;color:#333;line-height:1.85; }
+    .article-body p { margin-bottom:1.4em; }
+    .article-loading { text-align:center;padding:48px;color:#546e7a; }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <!-- WEATHER BAND -->
+  <div id="knot-weather-band" style="background:#ffd300;border-bottom:1px solid rgba(255,255,255,0.08);overflow:hidden;height:120px;display:flex;align-items:center;">
+    <div style="flex:1;overflow:hidden;height:95px;position:relative;margin-top:4px;">
+      <a class="weatherwidget-io" href="https://forecast7.com/en/34d54n112d47/prescott/?unit=us" data-label_1="PRESCOTT" data-label_2="WEATHER" data-theme="original" data-basecolor="#ffd300" data-days="7">PRESCOTT WEATHER</a>
+    </div>
+    <div id="knot-weather-report" style="flex-shrink:0;display:none;align-items:center;gap:8px;padding:0 20px;border-left:1px solid rgba(255,255,255,0.1);min-width:520px;background:#032a48;">
+      <span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);">&#127925; Today&#39;s Report</span>
+      <div id="knot-weather-player"></div>
+    </div>
+  </div>
+  <div id="knot-ad-banner" style="display:none;text-align:center;padding:12px 0;background:#f8f9fa;border-bottom:1px solid #e8ecf0;"></div>
+
+  <div class="article-wrap">
+    <a href="news.html" class="article-back">&#8592; Back to News</a>
+    <div id="article-content"><div class="article-loading">Loading article...</div></div>
+  </div>
+
+  <div id="site-footer"></div>
+
+  <script>
+    var API_URL = 'https://pbc-cms-production.up.railway.app';
+    var params = new URLSearchParams(window.location.search);
+    var articleId = params.get('id');
+    if (!articleId) { window.location.href = 'news.html'; }
+    else {
+      fetch(API_URL + '/api/news/' + articleId)
+        .then(function(r) { return r.json(); })
+        .then(function(article) {
+          if (!article || !article.headline) {
+            document.getElementById('article-content').innerHTML = '<div class="article-loading">Article not found.</div>';
+            return;
+          }
+          document.title = article.headline + ' \u2014 KNOT Radio';
+          var img = article.image ? '<img class="article-img" src="../' + article.image + '" alt="' + article.headline + '" />' : '';
+          var date = article.published_at ? new Date(article.published_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '';
+          var author = article.author ? '<span>By ' + article.author + '</span>' : '';
+          var body = (article.body || 'No content available.').split('\n').map(function(p) { return p ? '<p>' + p + '</p>' : ''; }).join('');
+          document.getElementById('article-content').innerHTML =
+            '<div class="article-cat">' + (article.news_type || '') + '</div>'
+            + '<h1 class="article-headline">' + article.headline + '</h1>'
+            + '<div class="article-meta"><span>' + date + '</span>' + author + '</div>'
+            + img
+            + '<div class="article-body">' + body + '</div>';
+        })
+        .catch(function() {
+          document.getElementById('article-content').innerHTML = '<div class="article-loading">Could not load article.</div>';
+        });
+    }
+  </script>
+  <script src="../js/layout.js" data-depth="1"></script>
+  <script src="../js/player.js"></script>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');</script>
+</body>
+</html>
