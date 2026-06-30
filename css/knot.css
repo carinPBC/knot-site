@@ -436,3 +436,13 @@ div.content-wrap,
 .schedule-card {
   background: #ffffff !important;
 }
+
+/* ── NEWS CARD TEXT + PADDING ────────────────────────────────── */
+.news-card-title { color: #ffffff !important; }
+.news-card-date  { color: rgba(255,255,255,0.65) !important; }
+.news-card-cat   { color: #ffd300 !important; }
+
+/* Top padding before the card grid */
+.news-grid {
+  padding-top: 24px !important;
+}
