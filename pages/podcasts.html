@@ -20,19 +20,19 @@
     .page-hero-img{width:100%;display:block;object-fit:cover;}
     .content-wrap{max-width:1600px;margin:0 auto;padding:48px 24px;}
     .show-group{margin-bottom:52px;}
-    .show-group-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #032a48;}
-    .show-group-name{font-size:20px;font-weight:900;color:#032a48;text-transform:uppercase;letter-spacing:.04em;}
+    .show-group-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #182f72;}
+    .show-group-name{font-size:20px;font-weight:900;color:#182f72;text-transform:uppercase;letter-spacing:.04em;}
     .show-group-station{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#6c8ea3;color:#fff;padding:3px 10px;border-radius:100px;}
     .pod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
-    .pod-card{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);text-decoration:none;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;}
+    .pod-card{background:#182f72;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.12);text-decoration:none;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;}
     .pod-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.13);}
     .pod-thumb{width:100%;aspect-ratio:1;object-fit:cover;background:#e8ecf0;display:block;}
     .pod-thumb-placeholder{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#032a48,#6c8ea3);display:flex;align-items:center;justify-content:center;font-size:48px;}
     .pod-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:5px;}
-    .pod-date{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6c8ea3;}
-    .pod-title{font-size:14px;font-weight:700;color:#032a48;line-height:1.4;flex:1;}
-    .pod-desc{font-size:12px;color:#546e7a;line-height:1.5;margin-top:2px;}
-    .pod-listen{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;color:#c0392b;text-transform:uppercase;letter-spacing:.05em;}
+    .pod-date{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ffd300;}
+    .pod-title{font-size:14px;font-weight:700;color:#ffffff;line-height:1.4;flex:1;}
+    .pod-desc{font-size:12px;color:rgba(255,255,255,0.65);line-height:1.5;margin-top:2px;}
+    .pod-listen{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;color:#ffd300;text-transform:uppercase;letter-spacing:.05em;}
     .no-results{text-align:center;padding:60px 24px;color:#546e7a;font-size:15px;}
 
   </style>
@@ -180,7 +180,7 @@ fetch(API_URL+"/api/pages/podcasts").then(function(r){return r.json();}).then(fu
   var container = document.getElementById('podcasts-container');
   if (!container) return;
 
-  fetch(API_URL + '/api/podcasts?limit=500')
+  fetch(API_URL + '/api/podcasts?limit=500&station_id=knot')
     .then(function(r) { return r.json(); })
     .then(function(episodes) {
       if (!episodes.length) {
@@ -198,8 +198,6 @@ fetch(API_URL+"/api/pages/podcasts").then(function(r){return r.json();}).then(fu
 
       container.innerHTML = Object.keys(shows).map(function(showName) {
         var show = shows[showName];
-        var stationBadge = show.station
-          ? '<span class="show-group-station">' + show.station.toUpperCase() + '</span>' : '';
         var cards = show.episodes.map(function(ep) {
           var thumb = ep.image
             ? '<img class="pod-thumb" src="' + (ep.image.startsWith('http') ? ep.image : ep.image.startsWith('uploads/') ? API_URL + '/' + ep.image : '../' + ep.image) + '" alt="' + ep.show_name + '" />'
@@ -220,7 +218,6 @@ fetch(API_URL+"/api/pages/podcasts").then(function(r){return r.json();}).then(fu
         return '<div class="show-group">'
           + '<div class="show-group-header">'
           + '<div class="show-group-name">' + showName + '</div>'
-          + stationBadge
           + '</div>'
           + '<div class="pod-grid">' + cards + '</div>'
           + '</div>';
