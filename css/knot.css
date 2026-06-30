@@ -25,7 +25,14 @@ body { background: #ffffff !important; }
 
 /* Nav */
 nav.main-nav { background: #ffffff !important; }
-.nav-logo img { height: 180px; }
+.nav-links li a { color: #182f72 !important; font-weight: 600; }
+.nav-links li a:hover { color: #eb3945 !important; }
+.nav-links li a.active {
+  color: #eb3945 !important;
+  border-bottom: 3px solid #eb3945 !important;
+  font-weight: 800 !important;
+}
+.nav-logo img { height: 120px; padding: 12px 0; }
 
 /* Listen Live button */
 .listen-btn {
@@ -305,3 +312,40 @@ nav.main-nav {
 .eeo-section h3 { border-bottom-color: var(--navy) !important; }
 .eeo-event { border-left-color: var(--navy) !important; }
 .eeo-event-date { color: var(--accent) !important; }
+
+/* ── NAV APP STRIP ───────────────────────────────────────── */
+.nav-app-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 2px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.nav-app-cta {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(24,47,114,0.55);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-right: 2px;
+  white-space: nowrap;
+}
+.nav-app-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #182f72;
+  color: #fff !important;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.nav-app-btn:hover { background: #eb3945; }
+@media (max-width: 900px) { .nav-app-strip { display: none; } }
