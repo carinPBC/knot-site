@@ -72,35 +72,6 @@
   "footer": {
     "columns": [
       {
-        "title": "Quick Links",
-        "links": [
-          {
-            "label": "News",
-            "url": "pages/news.html"
-          },
-          {
-            "label": "Events",
-            "url": "pages/events.html"
-          },
-          {
-            "label": "Podcasts",
-            "url": "pages/podcasts.html"
-          },
-          {
-            "label": "Schedule",
-            "url": "pages/schedule.html"
-          },
-          {
-            "label": "Advertise",
-            "url": "pages/advertise.html"
-          },
-          {
-            "label": "Contact",
-            "url": "pages/contact.html"
-          }
-        ]
-      },
-      {
         "title": "Station Info",
         "links": [
           {

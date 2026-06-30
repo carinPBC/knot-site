@@ -352,3 +352,15 @@ nav.main-nav {
 }
 .nav-app-btn:hover { background: #eb3945; }
 @media (max-width: 900px) { .nav-app-strip { display: none; } }
+
+/* ── FOOTER LOGO ─────────────────────────────────────────────── */
+.footer-logo img {
+  height: 120px !important;
+  width: auto !important;
+  max-width: none !important;
+  object-fit: contain !important;
+}
+.footer-logo-col { min-width: 220px !important; }
+.footer-grid {
+  grid-template-columns: auto 1fr 1fr !important;
+}
