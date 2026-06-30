@@ -199,9 +199,9 @@ nav.main-nav { background: #ffffff !important; }
 #knot-weather-band > div:nth-child(2) {
   flex: 1;
   overflow: hidden;
-  height: 80px !important;
+  height: 100px !important;
   position: relative;
-  margin-top: -6px !important;
+  margin-top: -14px !important;
 }
 
 /* Schedule */
