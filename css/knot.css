@@ -393,3 +393,46 @@ nav.main-nav {
 /* ── FOOTER PADDING ──────────────────────────────────────────── */
 .footer-grid { padding-bottom: 16px !important; }
 footer { padding-bottom: 0 !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   KNOT GLOBAL WHITE BACKGROUND — overrides all inherited greys
+   ══════════════════════════════════════════════════════════════ */
+body,
+.content-wrap,
+.page-hero,
+.editorial-section,
+.inquiry-section,
+.psa-section,
+.event-submit-section,
+.stay-connected-box,
+.hero,
+.news-controls,
+.events-wrap,
+.podcasts-wrap,
+.schedule-wrap,
+.shows-wrap,
+.advertise-wrap,
+.about-wrap,
+.contact-wrap,
+.employment-wrap,
+.archive-wrap,
+.eeo-wrap,
+section:not(.more-than-radio),
+div.content-wrap,
+#news-section,
+#schedule-section,
+#home-top-row,
+.news-grid-wrap,
+.page-content {
+  background: #ffffff !important;
+}
+
+/* News page cards — keep blue cards on inner news page too */
+.news-card {
+  background: #182f72 !important;
+}
+
+/* Schedule cards stay white with blue accent */
+.schedule-card {
+  background: #ffffff !important;
+}
