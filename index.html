@@ -206,49 +206,68 @@
       }).join('');
     }).catch(function(){});
 
-    // ── SCHEDULE ─────────────────────────────────────────────────
+    // ── SCHEDULE (with games merged in) ─────────────────────────
     Promise.all([
       fetch(API + '/api/schedule/knot').then(function(r){return r.json();}),
-      fetch(API + '/api/schedule/knot/overrides').then(function(r){return r.json();}).catch(function(){return [];})
+      fetch(API + '/api/schedule/knot/overrides').then(function(r){return r.json();}).catch(function(){return [];}),
+      fetch(API + '/api/schedule/knot/games').then(function(r){return r.json();}).catch(function(){return [];})
     ]).then(function(results) {
       var d = results[0];
       var overrides = results[1] || [];
+      var games = results[2] || [];
       var slots = d.slots || [];
       var grid = document.getElementById('schedule-grid');
       if (!slots.length) { grid.innerHTML = '<p style="color:#546e7a">Schedule coming soon.</p>'; return; }
       var now = new Date();
       var nowH = now.getHours();
       var dow = now.getDay();
+      var todayISO = now.toISOString().split('T')[0];
       var todayGroup = dow === 0 ? 'sun' : dow === 6 ? 'sat' : dow === 1 ? 'mon' : 'tue-fri';
       var todaySlots;
       if (todayGroup === 'mon') {
-        var merged = {};
-        slots.filter(function(sl){return sl.day_group==='tue-fri';}).forEach(function(sl){merged[sl.start_hour]=sl;});
-        slots.filter(function(sl){return sl.day_group==='mon';}).forEach(function(sl){merged[sl.start_hour]=sl;});
-        todaySlots = Object.values(merged).sort(function(a,b){return a.start_hour-b.start_hour;});
+        var mergedSlots = {};
+        slots.filter(function(sl){return sl.day_group==='tue-fri';}).forEach(function(sl){mergedSlots[sl.start_hour]=sl;});
+        slots.filter(function(sl){return sl.day_group==='mon';}).forEach(function(sl){mergedSlots[sl.start_hour]=sl;});
+        todaySlots = Object.values(mergedSlots).sort(function(a,b){return a.start_hour-b.start_hour;});
       } else {
         todaySlots = slots.filter(function(sl){return sl.day_group===todayGroup;}).sort(function(a,b){return a.start_hour-b.start_hour;});
       }
+
+      var todayGames = games.filter(function(g){ return g.game_date === todayISO; });
+      var todayOverrides = overrides.filter(function(o){ return o.override_date === todayISO; });
+
+      // Build unified list — games and overrides replace regular slots
+      var unified = todaySlots.map(function(sl) {
+        var game = todayGames.find(function(g){ return g.start_hour <= sl.start_hour && g.end_hour > sl.start_hour; });
+        var ov = todayOverrides.find(function(o){ return o.start_hour <= sl.start_hour && o.end_hour > sl.start_hour; });
+        if (game) return { start_hour: sl.start_hour, end_hour: game.end_hour, name: (game.away_team && game.home_team ? game.away_team + ' @ ' + game.home_team : game.sport), type: 'game', sport: game.sport, network: game.network };
+        if (ov)   return { start_hour: sl.start_hour, end_hour: ov.end_hour, name: ov.name, type: 'override' };
+        return { start_hour: sl.start_hour, end_hour: sl.end_hour, name: sl.name || '', type: 'show' };
+      });
+
       var currentIdx = -1;
-      for (var i = 0; i < todaySlots.length; i++) {
-        if (todaySlots[i].start_hour <= nowH && todaySlots[i].end_hour > nowH) { currentIdx = i; break; }
+      for (var i = 0; i < unified.length; i++) {
+        if (unified[i].start_hour <= nowH && unified[i].end_hour > nowH) { currentIdx = i; break; }
       }
-      var startFrom = currentIdx >= 0 ? currentIdx : todaySlots.findIndex(function(sl){return sl.start_hour>nowH;});
+      var startFrom = currentIdx >= 0 ? currentIdx : unified.findIndex(function(sl){return sl.start_hour > nowH;});
       if (startFrom < 0) startFrom = 0;
-      var display = todaySlots.slice(startFrom, startFrom + 6);
+      var display = unified.slice(startFrom, startFrom + 6);
+
       function fmtH(h) { if(h===0)return'12:00 AM'; if(h===12)return'12:00 PM'; return h<12?h+':00 AM':(h-12)+':00 PM'; }
-      var todayISO = now.toISOString().split('T')[0];
+
       grid.innerHTML = display.map(function(sl) {
         var isNow = sl.start_hour <= nowH && sl.end_hour > nowH;
-        // Check for override at this hour
-        var override = overrides.find(function(o) {
-          return o.override_date === todayISO && o.start_hour <= sl.start_hour && o.end_hour >= sl.end_hour;
-        });
-        var showName = override ? ('⚽ ' + override.name) : (sl.name || '');
-        var isOverride = !!override;
-        return '<div class="schedule-card'+(isNow?' on-air-now':''+(isOverride?' override-slot':''))+'">'
-          + '<div class="schedule-time">'+(isNow?'&#9654; On Air Now &mdash; ':'')+fmtH(sl.start_hour)+' &ndash; '+fmtH(sl.end_hour)+'</div>'
-          + '<div class="schedule-show">'+showName+'</div>'
+        var isGame = sl.type === 'game';
+        var isOv   = sl.type === 'override';
+        var cls = 'schedule-card' + (isNow ? ' on-air-now' : '') + (isGame ? ' schedule-game' : '') + (isOv ? ' override-slot' : '');
+        var badge = isGame ? '<span class="schedule-badge game-badge">&#9917; ' + (sl.sport || 'Game') + '</span>'
+                  : isOv  ? '<span class="schedule-badge override-badge">Override</span>' : '';
+        var sub = isGame && sl.network ? '<div class="schedule-network">' + sl.network + '</div>' : '';
+        return '<div class="' + cls + '">'
+          + '<div class="schedule-time">' + (isNow ? '&#9654; Now &mdash; ' : '') + fmtH(sl.start_hour) + ' &ndash; ' + fmtH(sl.end_hour) + '</div>'
+          + '<div class="schedule-show">' + sl.name + '</div>'
+          + sub
+          + badge
           + '</div>';
       }).join('');
     }).catch(function(){});
