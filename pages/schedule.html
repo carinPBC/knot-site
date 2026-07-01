@@ -100,64 +100,43 @@
     .game-card {
       background: #ffffff;
       border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      box-shadow: 0 2px 16px rgba(0,0,0,.10);
       overflow: hidden;
-      border-top: 4px solid #02a124;
     }
     .game-card-header {
-      background: #02a124;
-      color: #fff;
       padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .game-date-badge {
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .game-sport-badge {
-      font-size: 10px;
-      font-weight: 700;
-      background: rgba(255,255,255,.2);
-      padding: 2px 8px;
-      border-radius: 100px;
-    }
-    .game-teams {
+    .game-date-badge { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .game-sport-badge { font-size: 10px; font-weight: 700; background: rgba(255,255,255,.25); padding: 2px 8px; border-radius: 100px; }
+    /* VS layout */
+    .game-vs-layout {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
       padding: 16px;
-      font-size: 18px;
-      font-weight: 900;
-      color: #182f72;
-      line-height: 1.3;
     }
-    .game-teams .vs { font-size: 12px; font-weight: 600; color: #546e7a; display: block; margin: 2px 0; }
+    .game-team-block { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    .game-team-logo { width: 64px; height: 64px; object-fit: contain; border-radius: 6px; }
+    .game-team-logo-placeholder { width: 64px; height: 64px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .game-team-name { font-size: 13px; font-weight: 800; color: #182f72; line-height: 1.2; }
+    .game-team-city { font-size: 10px; color: #546e7a; }
+    .game-vs-center { font-size: 22px; font-weight: 900; color: #dde3ea; text-align: center; }
     .game-meta {
       padding: 0 16px 16px;
       display: flex;
       flex-direction: column;
       gap: 5px;
+      border-top: 1px solid #f0f4f8;
+      margin-top: 4px;
+      padding-top: 10px;
     }
-    .game-meta-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: #445566;
-    }
-    .game-meta-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: #02a124;
-      min-width: 60px;
-    }
-    .game-time-display {
-      font-weight: 700;
-      color: #182f72;
-    }
+    .game-meta-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #445566; }
+    .game-meta-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; min-width: 60px; }
+    .game-time-display { font-weight: 700; color: #182f72; }
   </style>
 </head>
 <body>
@@ -333,56 +312,88 @@
       });
 
     // ── LOAD UPCOMING GAMES ──────────────────────────────────────
-    fetch(API + '/api/schedule/knot/games')
-      .then(function(r) { return r.json(); })
-      .then(function(games) {
-        var grid = document.getElementById('upcoming-games-grid');
-        if (!games || !games.length) {
-          grid.innerHTML = '<p style="color:#546e7a;font-size:14px;grid-column:1/-1;">No games currently scheduled. Check back soon!</p>';
-          return;
-        }
-        grid.innerHTML = games.map(function(g) {
-          var dateObj = new Date(g.game_date + 'T12:00:00');
-          var dateStr = dateObj.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
-          var awayTeam = g.away_team || '';
-          var homeTeam = g.home_team || '';
-          var timeDisplay = '';
-          if (g.broadcast_time_et) {
-            var m = g.broadcast_time_et.match(/(\d+)(?::(\d+))?\s*(am|pm|AM|PM)/i);
-            if (m) {
-              var h = parseInt(m[1]); var min = m[2] || '00'; var ap = m[3].toUpperCase();
-              if (ap === 'PM' && h !== 12) h += 12;
-              if (ap === 'AM' && h === 12) h = 0;
-              var mtH = h - 2; var mtAp = 'AM';
-              if (mtH < 0) mtH += 24;
-              if (mtH >= 12) { mtAp = 'PM'; if (mtH > 12) mtH -= 12; }
-              else if (mtH === 0) mtH = 12;
-              timeDisplay = g.broadcast_time_et.toUpperCase().replace(/\s*ET$/i,'') + ' ET / ' + mtH + ':' + min + ' ' + mtAp + ' MT';
-            } else { timeDisplay = g.broadcast_time_et; }
+    Promise.all([
+      fetch(API + '/api/schedule/knot/games').then(function(r) { return r.json(); }),
+      fetch(API + '/api/teams').then(function(r) { return r.json(); }).catch(function() { return []; })
+    ]).then(function(results) {
+      var games = results[0] || [];
+      var teams = results[1] || [];
+      // Build team lookup by id
+      var teamMap = {};
+      teams.forEach(function(t) { teamMap[t.id] = t; });
+
+      var grid = document.getElementById('upcoming-games-grid');
+      if (!grid) return;
+      if (!games.length) {
+        grid.innerHTML = '<p style="color:#546e7a;font-size:14px;grid-column:1/-1;">No games currently scheduled. Check back soon!</p>';
+        return;
+      }
+      grid.innerHTML = games.map(function(g) {
+        var dateObj = new Date(g.game_date + 'T12:00:00');
+        var dateStr = dateObj.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+
+        // Resolve teams
+        var homeTeam = g.home_team_id ? teamMap[g.home_team_id] : null;
+        var awayTeam = g.away_team_id ? teamMap[g.away_team_id] : null;
+        var homeName = homeTeam ? homeTeam.name : (g.home_team || 'Home');
+        var awayName = awayTeam ? awayTeam.name : (g.away_team || 'Away');
+        var homeColor = homeTeam ? (homeTeam.primary_color || '#02a124') : '#02a124';
+        var awayColor = awayTeam ? (awayTeam.primary_color || '#182f72') : '#182f72';
+
+        function teamLogo(t, name) {
+          if (t && t.logo_url) {
+            var src = t.logo_url.startsWith('http') ? t.logo_url : 'https://pbc-cms-production.up.railway.app/' + t.logo_url;
+            return '<img class="game-team-logo" src="' + src + '" alt="' + name + '" />';
           }
-          return '<div class="game-card">'
-            + '<div class="game-card-header">'
-            + '<span class="game-date-badge">' + dateStr + '</span>'
-            + '<span class="game-sport-badge">' + g.sport + '</span>'
-            + '</div>'
-            + '<div class="game-teams">'
-            + (awayTeam || 'Away')
-            + '<span class="vs">at</span>'
-            + (homeTeam || 'Home')
-            + '</div>'
-            + '<div class="game-meta">'
-            + (timeDisplay ? '<div class="game-meta-row"><span class="game-meta-label">Time</span><span class="game-time-display">' + timeDisplay + '</span></div>' : '')
-            + (g.network ? '<div class="game-meta-row"><span class="game-meta-label">Network</span><span>' + g.network + '</span></div>' : '')
-            + (g.location ? '<div class="game-meta-row"><span class="game-meta-label">Location</span><span>' + g.location + '</span></div>' : '')
-            + (g.announcer ? '<div class="game-meta-row"><span class="game-meta-label">Announcer</span><span>' + g.announcer + '</span></div>' : '')
-            + (g.notes ? '<div class="game-meta-row"><span class="game-meta-label">Notes</span><span style="color:#546e7a;font-style:italic;">' + g.notes + '</span></div>' : '')
-            + '</div></div>';
-        }).join('');
-      })
-      .catch(function() {
-        var grid = document.getElementById('upcoming-games-grid');
-        if (grid) grid.innerHTML = '<p style="color:#546e7a;">Could not load games.</p>';
-      });
+          var pc = (t && t.primary_color) || '#dde3ea';
+          var sc = (t && t.secondary_color) || '#ffffff';
+          return '<div class="game-team-logo-placeholder" style="background:' + pc + ';color:' + sc + ';">&#9917;</div>';
+        }
+
+        // ET→MT conversion
+        var timeDisplay = '';
+        if (g.broadcast_time_et) {
+          var m = g.broadcast_time_et.match(/(\d+)(?::(\d+))?\s*(am|pm|AM|PM)/i);
+          if (m) {
+            var h = parseInt(m[1]); var min = m[2]||'00'; var ap = m[3].toUpperCase();
+            if (ap==='PM' && h!==12) h+=12; if (ap==='AM' && h===12) h=0;
+            var mtH = h-2; var mtAp='AM';
+            if (mtH<0) mtH+=24;
+            if (mtH>=12) { mtAp='PM'; if (mtH>12) mtH-=12; } else if (mtH===0) mtH=12;
+            timeDisplay = g.broadcast_time_et.toUpperCase().replace(/\s*ET$/i,'') + ' ET / ' + mtH + ':' + min + ' ' + mtAp + ' MT';
+          } else { timeDisplay = g.broadcast_time_et; }
+        }
+
+        return '<div class="game-card" style="border-top:4px solid '+homeColor+';">'
+          + '<div class="game-card-header" style="background:'+homeColor+';color:#fff;">'
+          + '<span class="game-date-badge">'+dateStr+'</span>'
+          + '<span class="game-sport-badge">'+(g.sport||'')+'</span>'
+          + '</div>'
+          + '<div class="game-vs-layout">'
+          + '<div class="game-team-block">'
+          + teamLogo(awayTeam, awayName)
+          + '<div class="game-team-name">'+awayName+'</div>'
+          + (awayTeam && awayTeam.city_school ? '<div class="game-team-city">'+awayTeam.city_school+'</div>' : '')
+          + '</div>'
+          + '<div class="game-vs-center">@</div>'
+          + '<div class="game-team-block">'
+          + teamLogo(homeTeam, homeName)
+          + '<div class="game-team-name">'+homeName+'</div>'
+          + (homeTeam && homeTeam.city_school ? '<div class="game-team-city">'+homeTeam.city_school+'</div>' : '')
+          + '</div>'
+          + '</div>'
+          + '<div class="game-meta">'
+          + (timeDisplay ? '<div class="game-meta-row"><span class="game-meta-label" style="color:'+homeColor+';">Time</span><span class="game-time-display">'+timeDisplay+'</span></div>' : '')
+          + (g.network ? '<div class="game-meta-row"><span class="game-meta-label" style="color:'+homeColor+';">Network</span><span>'+g.network+'</span></div>' : '')
+          + (g.location ? '<div class="game-meta-row"><span class="game-meta-label" style="color:'+homeColor+';">Location</span><span>'+g.location+'</span></div>' : '')
+          + (g.announcer ? '<div class="game-meta-row"><span class="game-meta-label" style="color:'+homeColor+';">Announcer</span><span>'+g.announcer+'</span></div>' : '')
+          + (g.notes ? '<div class="game-meta-row"><span class="game-meta-label" style="color:'+homeColor+';">Notes</span><span style="color:#546e7a;font-style:italic;">'+g.notes+'</span></div>' : '')
+          + '</div></div>';
+      }).join('');
+    }).catch(function() {
+      var grid = document.getElementById('upcoming-games-grid');
+      if (grid) grid.innerHTML = '<p style="color:#546e7a;">Could not load games.</p>';
+    });
   })();
   </script>
 <script>
