@@ -3,7 +3,150 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="../images/logo-knot.png" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EEO Public File Report — KNOT Radio</title>
+  <title>EEO Report — KNOT Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/knot-base.css?v=11" /><link rel="stylesheet" href="../css/knot.css?v=11" />
+  <style id="nav-critical">
+    nav.main-nav{background:#ffffff !important;position:sticky !important;top:0 !important;z-index:9999 !important;}
+    .main-nav-inner{width:100%;padding:0 48px;display:flex;align-items:center;justify-content:space-between;min-height:220px;}
+    .nav-logo img{height:180px;width:auto;object-fit:contain;padding:7px 0;min-width:280px;}
+    @media(max-width:900px){.main-nav-inner{padding:0 20px;}}
+    @media(max-width:640px){.nav-links-wrap{display:none !important;}.nav-hamburger{display:flex !important;}}
+  </style>
+  <style>
+    body{background:#f5f8fb !important;}
+    .eeo-wrap{max-width:960px;margin:0 auto;padding:48px 32px;font-family:inherit;color:#1a2332;}
+    .eeo-header{margin-bottom:36px;padding-bottom:24px;border-bottom:3px solid #182f72;}
+    .eeo-header h1{font-size:13px;font-weight:800;color:#182f72;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+    .eeo-header h2{font-size:26px;font-weight:900;color:#182f72;line-height:1.2;margin-bottom:4px;}
+    .eeo-header .period{font-size:14px;color:#546e7a;margin-top:8px;}
+    .eeo-section{margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid #e8ecf0;}
+    .eeo-section:last-child{border-bottom:none;}
+    .eeo-section h3{font-size:15px;font-weight:800;color:#182f72;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #182f72;}
+    .eeo-section p{font-size:14px;line-height:1.75;margin-bottom:12px;color:#2a3a4a;}
+    .eeo-section p strong{color:#182f72;}
+    /* Tables */
+    .eeo-wrap table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:13px;}
+    .eeo-wrap th{text-align:left;font-weight:700;padding:10px 14px;border-bottom:2px solid #182f72;color:#182f72;background:#eef5fa;font-size:12px;text-transform:uppercase;letter-spacing:.04em;}
+    .eeo-wrap td{padding:10px 14px;border-bottom:1px solid #e8ecf0;vertical-align:top;color:#2a3a4a;}
+    .eeo-wrap tr:last-child td{border-bottom:none;}
+    .eeo-wrap tr:hover td{background:#f5f8fb;}
+    .eeo-wrap td strong{color:#182f72;}
+    /* Community events */
+    .eeo-event{margin-bottom:24px;padding:18px 20px;background:#fff;border-radius:8px;border-left:4px solid #182f72;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+    .eeo-event-date{font-size:12px;font-weight:800;color:#182f72;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+    .eeo-event-title{font-size:14px;font-weight:700;color:#182f72;margin-bottom:8px;}
+    .eeo-event p{font-size:13px;line-height:1.65;margin:0;color:#3a4a5a;}
+    /* PDF link */
+    .pdf-link{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:#182f72;color:#fff;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;transition:background .15s;}
+    .pdf-link:hover{background:#0a3a5c;}
+    @media(max-width:640px){
+      .eeo-wrap{padding:24px 16px;}
+      .eeo-wrap th,.eeo-wrap td{padding:8px 10px;}
+      .eeo-header h2{font-size:20px;}
+    }
+  </style>
+</head>
+<body class="knot-inner">
+  <div id="site-header"></div>
+  <div class="eeo-wrap">
+
+    <!-- Header -->
+    <div class="eeo-header">
+      <h1>Great Circle Media</h1>
+      <h2>EEO Public File Report &mdash; Year 2025&ndash;2026</h2>
+      <div class="period">
+        <strong>Employment Unit Covered:</strong> KAFF AM, KAFF FM, KMGN FM, KTMG FM, KNOT AM, KFSZ FM<br>
+        <strong>Reporting Period:</strong> 06/01/2025 &ndash; 05/31/2026
+      </div>
+    </div>
+
+    <!-- Vacancies -->
+    <div class="eeo-section">
+      <h3>Full Time Job Vacancies Filled During Reporting Period</h3>
+      <p>Recruitment/referral sources used for each vacancy:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Job Title Vacancy</th>
+            <th>Recruitment Sources</th>
+            <th>Hire Source</th>
+            <th>Date Open</th>
+            <th>Date Filled</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sales Manager</strong></td>
+            <td>A, C, E, I</td>
+            <td>C</td>
+            <td>2/1/2026</td>
+            <td>3/16/2026</td>
+            <td>Flagstaff</td>
+          </tr>
+          <tr>
+            <td><strong>News / Sports Reporter</strong></td>
+            <td>E, F, I, K</td>
+            <td>F</td>
+            <td>4/1/2025</td>
+            <td>8/28/2025</td>
+            <td>Flagstaff</td>
+          </tr>
+          <tr>
+            <td><strong>Sales Executive</strong></td>
+            <td>B, D, I, J, K</td>
+            <td>I</td>
+            <td>6/1/2025</td>
+            <td>6/17/2025</td>
+            <td>Flagstaff</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recruitment Sources -->
+    <div class="eeo-section">
+      <h3>Recruitment Source Codes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Recruitment Source</th>
+            <th>Code</th>
+            <th># Interviews Referred</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Arizona Media Association</td><td>A</td><td>0</td></tr>
+          <tr><td>Indeed.com</td><td>B</td><td>1</td></tr>
+          <tr><td>Internal Station Postings</td><td>C</td><td>1</td></tr>
+          <tr><td>LinkedIn</td><td>D</td><td>0</td></tr>
+          <tr><td>Market Referral</td><td>E</td><td>1</td></tr>
+          <tr><td>NAU / KJACK</td><td>F</td><td>1</td></tr>
+          <tr><td>NAU Job Fair</td><td>G</td><td>0</td></tr>
+          <tr><td>Other Job Fair</td><td>H</td><td>0</td></tr>
+          <tr><td>Station Website Postings</td><td>I</td><td>1</td></tr>
+          <tr><td>Walk Ins</td><td>J</td><td>2</td></tr>
+          <tr><td>Handshake</td><td>K</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Outreach -->
+    <div class="eeo-section" style="border-bottom:none;">
+      <h3>Outreach &amp; Community Initiatives</h3>
+      <p>During this reporting period:</p>
+      <p>KAFF incorporated a weekly educational meeting with NAU/KJACK / NAZ Today staff and provided additional training in radio news and sports. Incorporation with NAU and KJACK students.</p>
+      <p>Our KAFF internships allowed students to create and maintain a video news and sports platform in conjunction with on-air presence.</p>
+    </div>
+
+  </div>
+
+  <div id="site-footer">>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="../images/logo-knot.png" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EEO Report — KNOT Radio</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/knot-base.css?v=11" /><link rel="stylesheet" href="../css/knot.css?v=11" />
   <style id="nav-critical">

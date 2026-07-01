@@ -75,7 +75,7 @@
         "title": "Station Info",
         "links": [
           {
-            "label": "EEO Public File",
+            "label": "EEO",
             "url": "pages/eeo.html"
           },
           {
@@ -89,6 +89,10 @@
           {
             "label": "Employment",
             "url": "pages/employment.html"
+          },
+          {
+            "label": "Public Inspection File",
+            "url": "https://publicfiles.fcc.gov/am-profile/KNOT"
           }
         ]
       }
