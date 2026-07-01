@@ -206,70 +206,85 @@
       }).join('');
     }).catch(function(){});
 
-    // ── SCHEDULE (with games merged in) ─────────────────────────
+    // ── SCHEDULE — show card style, today's lineup only ──────────
     Promise.all([
       fetch(API + '/api/schedule/knot').then(function(r){return r.json();}),
-      fetch(API + '/api/schedule/knot/overrides').then(function(r){return r.json();}).catch(function(){return [];}),
-      fetch(API + '/api/schedule/knot/games').then(function(r){return r.json();}).catch(function(){return [];})
-    ]).then(function(results) {
-      var d = results[0];
-      var overrides = results[1] || [];
-      var games = results[2] || [];
-      var slots = d.slots || [];
+      fetch(API + '/api/schedule/knot/overrides').then(function(r){return r.json();}).catch(function(){return [];})
+    ]).then(function(res) {
+      var d = res[0], overrides = res[1] || [];
+      var slots = d.slots || [], shows = d.shows || [];
       var grid = document.getElementById('schedule-grid');
+      if (!grid) return;
       if (!slots.length) { grid.innerHTML = '<p style="color:#546e7a">Schedule coming soon.</p>'; return; }
-      var now = new Date();
-      var nowH = now.getHours();
-      var dow = now.getDay();
+
+      // Build show image map by name
+      var imgMap = {};
+      shows.forEach(function(s) { imgMap[s.name] = s.image || ''; });
+
+      var now = new Date(), nowH = now.getHours(), dow = now.getDay();
       var todayISO = now.toISOString().split('T')[0];
-      var todayGroup = dow === 0 ? 'sun' : dow === 6 ? 'sat' : dow === 1 ? 'mon' : 'tue-fri';
+      var todayGroup = dow===0?'sun':dow===6?'sat':dow===1?'mon':'tue-fri';
       var todaySlots;
       if (todayGroup === 'mon') {
-        var mergedSlots = {};
-        slots.filter(function(sl){return sl.day_group==='tue-fri';}).forEach(function(sl){mergedSlots[sl.start_hour]=sl;});
-        slots.filter(function(sl){return sl.day_group==='mon';}).forEach(function(sl){mergedSlots[sl.start_hour]=sl;});
-        todaySlots = Object.values(mergedSlots).sort(function(a,b){return a.start_hour-b.start_hour;});
+        var ms = {};
+        slots.filter(function(sl){return sl.day_group==='tue-fri';}).forEach(function(sl){ms[sl.start_hour]=sl;});
+        slots.filter(function(sl){return sl.day_group==='mon';}).forEach(function(sl){ms[sl.start_hour]=sl;});
+        todaySlots = Object.values(ms).sort(function(a,b){return a.start_hour-b.start_hour;});
       } else {
         todaySlots = slots.filter(function(sl){return sl.day_group===todayGroup;}).sort(function(a,b){return a.start_hour-b.start_hour;});
       }
+      var ci = -1;
+      for (var i=0;i<todaySlots.length;i++) { if (todaySlots[i].start_hour<=nowH && todaySlots[i].end_hour>nowH){ci=i;break;} }
+      var sf = ci>=0 ? ci : todaySlots.findIndex(function(sl){return sl.start_hour>nowH;});
+      if (sf<0) sf=0;
+      var display = todaySlots.slice(sf, sf+6);
+      function fmtH(h){if(h===0)return'12:00 AM';if(h===12)return'12:00 PM';return h<12?h+':00 AM':(h-12)+':00 PM';}
 
-      var todayGames = games.filter(function(g){ return g.game_date === todayISO; });
-      var todayOverrides = overrides.filter(function(o){ return o.override_date === todayISO; });
+      var cards = display.map(function(sl) {
+        var isNow = sl.start_hour<=nowH && sl.end_hour>nowH;
+        var ov = overrides.find(function(o){return o.override_date===todayISO && o.start_hour<=sl.start_hour && o.end_hour>sl.start_hour;});
+        var name = ov ? ov.name : (sl.name||'');
+        var img = !ov ? (imgMap[sl.name]||'') : '';
+        var time = fmtH(sl.start_hour)+' – '+fmtH(sl.end_hour);
+        var border = sl.color || (ov?'#ffd300':'#182f72');
 
-      // Build unified list — games and overrides replace regular slots
-      var unified = todaySlots.map(function(sl) {
-        var game = todayGames.find(function(g){ return g.start_hour <= sl.start_hour && g.end_hour > sl.start_hour; });
-        var ov = todayOverrides.find(function(o){ return o.start_hour <= sl.start_hour && o.end_hour > sl.start_hour; });
-        if (game) return { start_hour: sl.start_hour, end_hour: game.end_hour, name: (game.away_team && game.home_team ? game.away_team + ' @ ' + game.home_team : game.sport), type: 'game', sport: game.sport, network: game.network };
-        if (ov)   return { start_hour: sl.start_hour, end_hour: ov.end_hour, name: ov.name, type: 'override' };
-        return { start_hour: sl.start_hour, end_hour: sl.end_hour, name: sl.name || '', type: 'show' };
+        var card = document.createElement('div');
+        card.style.cssText = 'background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.08);overflow:hidden;display:flex;flex-direction:column;'+(isNow?'outline:3px solid #ffd300;':'');
+
+        var imgWrap = document.createElement('div');
+        imgWrap.style.cssText = 'width:100%;aspect-ratio:1/1;overflow:hidden;background:'+border+';position:relative;';
+        if (img) {
+          var im = document.createElement('img');
+          im.src = img; im.alt = name;
+          im.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+          imgWrap.appendChild(im);
+        } else {
+          var txt = document.createElement('div');
+          txt.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center;font-size:14px;font-weight:800;color:#fff;line-height:1.3;';
+          txt.textContent = name;
+          imgWrap.appendChild(txt);
+        }
+        if (isNow) {
+          var badge = document.createElement('div');
+          badge.style.cssText = 'position:absolute;top:8px;left:8px;background:#ffd300;color:#182f72;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:100px;';
+          badge.textContent = '▶ Now';
+          imgWrap.appendChild(badge);
+        }
+        card.appendChild(imgWrap);
+
+        var body = document.createElement('div');
+        body.style.cssText = 'padding:12px 14px;border-top:3px solid '+border+';flex:1;';
+        var nameEl = document.createElement('div');
+        nameEl.style.cssText = 'font-size:13px;font-weight:800;color:#182f72;line-height:1.3;margin-bottom:4px;';
+        nameEl.textContent = name;
+        var timeEl = document.createElement('div');
+        timeEl.style.cssText = 'font-size:10px;font-weight:700;color:#546e7a;text-transform:uppercase;letter-spacing:.05em;';
+        timeEl.textContent = time;
+        body.appendChild(nameEl); body.appendChild(timeEl);
+        card.appendChild(body);
+        return card.outerHTML;
       });
-
-      var currentIdx = -1;
-      for (var i = 0; i < unified.length; i++) {
-        if (unified[i].start_hour <= nowH && unified[i].end_hour > nowH) { currentIdx = i; break; }
-      }
-      var startFrom = currentIdx >= 0 ? currentIdx : unified.findIndex(function(sl){return sl.start_hour > nowH;});
-      if (startFrom < 0) startFrom = 0;
-      var display = unified.slice(startFrom, startFrom + 6);
-
-      function fmtH(h) { if(h===0)return'12:00 AM'; if(h===12)return'12:00 PM'; return h<12?h+':00 AM':(h-12)+':00 PM'; }
-
-      grid.innerHTML = display.map(function(sl) {
-        var isNow = sl.start_hour <= nowH && sl.end_hour > nowH;
-        var isGame = sl.type === 'game';
-        var isOv   = sl.type === 'override';
-        var cls = 'schedule-card' + (isNow ? ' on-air-now' : '') + (isGame ? ' schedule-game' : '') + (isOv ? ' override-slot' : '');
-        var badge = isGame ? '<span class="schedule-badge game-badge">&#9917; ' + (sl.sport || 'Game') + '</span>'
-                  : isOv  ? '<span class="schedule-badge override-badge">Override</span>' : '';
-        var sub = isGame && sl.network ? '<div class="schedule-network">' + sl.network + '</div>' : '';
-        return '<div class="' + cls + '">'
-          + '<div class="schedule-time">' + (isNow ? '&#9654; Now &mdash; ' : '') + fmtH(sl.start_hour) + ' &ndash; ' + fmtH(sl.end_hour) + '</div>'
-          + '<div class="schedule-show">' + sl.name + '</div>'
-          + sub
-          + badge
-          + '</div>';
-      }).join('');
+      grid.innerHTML = cards.join('');
     }).catch(function(){});
 
   }).catch(function(e){ console.error('KNOT home error:', e); });
