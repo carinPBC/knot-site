@@ -240,7 +240,7 @@
           var ad = ads[0];
           var src = ad.image.startsWith('/uploads/') ? ad.image : '/' + ad.image;
           if (ad.link_url) {
-            banner.innerHTML = '<a id="knot-ad-link" href="https://pbc-cms-production.up.railway.app/api/track/click?station=knot&type=ad&label='+encodeURIComponent(ad.label||ad.link_url||'')+'&url='+encodeURIComponent(ad.link_url)+'"' target="_blank" rel="noopener" style="display:inline-block;">'
+            banner.innerHTML = '<a id="knot-ad-link" href="https://pbc-cms-production.up.railway.app/api/track/click?station=knot&type=ad&label='+encodeURIComponent(ad.label||ad.link_url||'')+'&url='+encodeURIComponent(ad.link_url)+'" target="_blank" rel="noopener" style="display:inline-block;">'
               + '<img id="knot-ad-img" src="' + src + '" alt="Advertisement" style="max-width:100%;height:auto;display:inline-block;" />'
               + '</a>';
           } else {
@@ -254,7 +254,7 @@
           var img = document.getElementById('knot-ad-img');
           var link = document.getElementById('knot-ad-link');
           if (img) img.src = src;
-          if (link) link.href = ad.link_url || '#';
+          if (link) link.href = ad.link_url ? 'https://pbc-cms-production.up.railway.app/api/track/click?station=knot&type=ad&label='+encodeURIComponent(ad.label||ad.link_url||'')+'&url='+encodeURIComponent(ad.link_url) : '#';
         }
         buildBanner();
         if (ads.length > 1) {
