@@ -204,8 +204,7 @@ function renderSection(s, i) {
     return '<div class="editorial-section" style="' + secStyle + '">'
       + '<div style="max-width:860px;margin:0 auto;padding:0 24px;">'
       + (s.heading ? '<' + hTag + ' style="' + hStyle + '">' + s.heading + '</' + hTag + '>' + sepHtml : '')
-      + bodyHtml
-      + ctaHtml
+      + (s.separator ? '<div style="margin-top:18px;">' + bodyHtml + ctaHtml + '</div>' : bodyHtml + ctaHtml)
       + '</div></div>';
   }
 
@@ -214,16 +213,13 @@ function renderSection(s, i) {
     return '<div class="editorial-section" style="' + secStyle + '">'
       + '<div style="max-width:860px;margin:0 auto;padding:48px 24px;">'
       + (s.heading ? '<' + hTag + ' style="' + hStyle + '">' + s.heading + '</' + hTag + '>' + sepHtml : '')
-      + bodyHtml
-      + ctaHtml
+      + (s.separator ? '<div style="margin-top:18px;">' + bodyHtml + ctaHtml + '</div>' : bodyHtml + ctaHtml)
       + '</div></div>';
   }
   return '<div class="editorial-section" style="' + secStyle + '"><div class="editorial-grid' + rev + '">'
     + '<div class="editorial-text">'
     + (s.heading ? '<' + hTag + ' style="' + hStyle + '">' + s.heading + '</' + hTag + '>' + sepHtml : '')
-    + bodyHtml
-    + ctaHtml
-    + '</div>'
+    + (s.separator ? '<div style="margin-top:18px;">' + bodyHtml + ctaHtml + '</div>' : bodyHtml + ctaHtml)
     + imgHtml
     + '</div></div>';
 }
