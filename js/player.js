@@ -1,19 +1,19 @@
 /**
- * KYCA Player — StreamGuys audio (with ads) + schedule-aware Watch Live video
+ * KNOT Player — StreamGuys audio (with ads) + schedule-aware Watch Live video
  * Persists across page navigation via localStorage
  */
 (function() {
-  var STREAM_URL       = 'http://ophanim.net:8444/s/8030';
-  var STREAMGUYS_URL   = 'https://player.streamguys.com/prescott/kyca/sgplayer/player.php';
+  var STREAM_URL       = '';
+  var STREAMGUYS_URL   = 'https://player.streamguys.com/prescott/knot/sgplayer/player.php?l=layout-small+single-stream-metadata';
   var API_URL          = 'https://pbc-cms-production.up.railway.app';
-  var STORAGE_KEY      = 'kyca_player_open';
-  var VOL_KEY          = 'kyca_volume';
+  var STORAGE_KEY      = 'knot_player_open';
+  var VOL_KEY          = 'knot_volume';
   var POLL_INTERVAL    = 5 * 60 * 1000; // check schedule every 5 min
 
   // ── Inject CSS ──────────────────────────────────────────────
   var style = document.createElement('style');
   style.textContent = `
-    #kyca-player-widget {
+    #knot-player-widget {
       position: fixed;
       bottom: -420px;
       right: 24px;
@@ -27,10 +27,10 @@
       border: 1px solid rgba(255,255,255,0.1);
       border-bottom: none;
     }
-    #kyca-player-widget.visible { bottom: 0; }
+    #knot-player-widget.visible { bottom: 0; }
 
     /* Header bar */
-    #kyca-player-header {
+    #knot-player-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -40,12 +40,12 @@
       cursor: pointer;
       user-select: none;
     }
-    #kyca-player-header-left {
+    #knot-player-header-left {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    #kyca-player-logo-img {
+    #knot-player-logo-img {
       height: 28px;
       width: auto;
       object-fit: contain;
@@ -74,7 +74,7 @@
       0%,100% { opacity:1; transform:scale(1); }
       50%      { opacity:.4; transform:scale(.7); }
     }
-    #kyca-player-header-right {
+    #knot-player-header-right {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -96,7 +96,7 @@
     }
 
     /* On-air info bar */
-    #kyca-on-air-bar {
+    #knot-on-air-bar {
       padding: 8px 14px;
       background: rgba(0,0,0,0.2);
       display: flex;
@@ -139,22 +139,22 @@
     }
 
     /* Player iframe area */
-    #kyca-player-body {
+    #knot-player-body {
       position: relative;
       width: 100%;
       background: #000;
     }
-    #kyca-player-iframe {
+    #knot-player-iframe {
       width: 100%;
       height: 220px;
       border: none;
       display: block;
     }
     /* Video mode — taller */
-    #kyca-player-widget.video-mode #kyca-player-iframe {
+    #knot-player-widget.video-mode #knot-player-iframe {
       height: 280px;
     }
-    #kyca-player-widget.video-mode {
+    #knot-player-widget.video-mode {
       width: 380px;
     }
 
@@ -222,10 +222,10 @@
       background: #c0392b;
       border: none;
     }
-    #kyca-player-widget.video-mode #kyca-audio-mode { display: none; }
+    #knot-player-widget.video-mode #knot-audio-mode { display: none; }
 
     /* Back to audio button (shown in video mode) */
-    #kyca-back-audio-btn {
+    #knot-back-audio-btn {
       display: none;
       width: 100%;
       background: rgba(0,0,0,0.3);
@@ -238,61 +238,61 @@
       text-align: center;
       transition: color .15s;
     }
-    #kyca-back-audio-btn:hover { color: #fff; }
-    #kyca-player-widget.video-mode #kyca-back-audio-btn { display: block; }
+    #knot-back-audio-btn:hover { color: #fff; }
+    #knot-player-widget.video-mode #knot-back-audio-btn { display: block; }
 
-    body.kyca-player-open { padding-bottom: 0; }
+    body.knot-player-open { padding-bottom: 0; }
 
     @media (max-width: 400px) {
-      #kyca-player-widget { width: calc(100vw - 16px); right: 8px; }
-      #kyca-player-widget.video-mode { width: calc(100vw - 16px); }
+      #knot-player-widget { width: calc(100vw - 16px); right: 8px; }
+      #knot-player-widget.video-mode { width: calc(100vw - 16px); }
     }
   `;
   document.head.appendChild(style);
 
   // ── Build HTML ───────────────────────────────────────────────
   var widget = document.createElement('div');
-  widget.id = 'kyca-player-widget';
+  widget.id = 'knot-player-widget';
   widget.innerHTML = `
-    <div id="kyca-player-header">
-      <div id="kyca-player-header-left">
-        <img id="kyca-player-logo-img" src="/images/logo-kyca.png" onerror="this.style.display='none'" alt="KYCA" />
-        <span class="kyca-live-dot">Live</span>
+    <div id="knot-player-header">
+      <div id="knot-player-header-left">
+        <img id="knot-player-logo-img" src="/images/logo-knot.png" onerror="this.style.display='none'" alt="KNOT" />
+        <span class="knot-live-dot">Live</span>
       </div>
-      <div id="kyca-player-header-right">
-        <button id="kyca-minimize-btn" title="Minimize">&#8211;</button>
-        <button id="kyca-close-btn" title="Close">&#10005;</button>
+      <div id="knot-player-header-right">
+        <button id="knot-minimize-btn" title="Minimize">&#8211;</button>
+        <button id="knot-close-btn" title="Close">&#10005;</button>
       </div>
     </div>
-    <div id="kyca-on-air-bar">
-      <span id="kyca-on-air-show">KYCA 1490 AM</span>
-      <button id="kyca-watch-live-btn">&#128250; Watch Live</button>
+    <div id="knot-on-air-bar">
+      <span id="knot-on-air-show">KNOT 1490 AM</span>
+      <button id="knot-watch-live-btn">&#128250; Watch Live</button>
     </div>
-    <div id="kyca-player-body">
+    <div id="knot-player-body">
       <!-- Visible: audio controls or video embed -->
-      <div id="kyca-audio-mode">
-        <audio id="kyca-audio" preload="none" style="display:none"></audio>
-        <div id="kyca-audio-controls">
-          <button id="kyca-play-btn">&#9654;</button>
-          <div id="kyca-audio-info">
-            <div id="kyca-track-label">Live Stream</div>
-            <div id="kyca-vol-row">
-              <span id="kyca-vol-icon">&#128266;</span>
-              <input type="range" id="kyca-vol" min="0" max="1" step="0.02" value="1" />
+      <div id="knot-audio-mode">
+        <audio id="knot-audio" preload="none" style="display:none"></audio>
+        <div id="knot-audio-controls">
+          <button id="knot-play-btn">&#9654;</button>
+          <div id="knot-audio-info">
+            <div id="knot-track-label">Live Stream</div>
+            <div id="knot-vol-row">
+              <span id="knot-vol-icon">&#128266;</span>
+              <input type="range" id="knot-vol" min="0" max="1" step="0.02" value="1" />
             </div>
           </div>
         </div>
       </div>
-      <iframe id="kyca-player-iframe"
+      <iframe id="knot-player-iframe"
         src=""
         allow="autoplay; fullscreen"
         allowfullscreen
         scrolling="no"
         style="width:100%;border:none;display:none;height:280px;">
       </iframe>
-      <button id="kyca-back-audio-btn">&#8592; Back to audio</button>
+      <button id="knot-back-audio-btn">&#8592; Back to audio</button>
       <!-- Hidden StreamGuys iframe — satisfies streaming contract -->
-      <iframe id="kyca-sg-iframe"
+      <iframe id="knot-sg-iframe"
         src=""
         style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;top:0;left:0;"
         tabindex="-1"
@@ -302,10 +302,10 @@
   `;
   document.body.appendChild(widget);
 
-  var watchBtn     = document.getElementById('kyca-watch-live-btn');
-  var backAudioBtn = document.getElementById('kyca-back-audio-btn');
-  var onAirShow    = document.getElementById('kyca-on-air-show');
-  var header       = document.getElementById('kyca-player-header');
+  var watchBtn     = document.getElementById('knot-watch-live-btn');
+  var backAudioBtn = document.getElementById('knot-back-audio-btn');
+  var onAirShow    = document.getElementById('knot-on-air-show');
+  var header       = document.getElementById('knot-player-header');
 
   var isOpen       = false;
   var isMinimized  = false;
@@ -314,13 +314,13 @@
   var currentVideoUrl = null;
   var pollTimer    = null;
 
-  var audio    = document.getElementById('kyca-audio');
-  var iframe   = document.getElementById('kyca-player-iframe');
-  var sgIframe = document.getElementById('kyca-sg-iframe');
-  var playBtn  = document.getElementById('kyca-play-btn');
-  var volSlider = document.getElementById('kyca-vol');
-  var volIcon   = document.getElementById('kyca-vol-icon');
-  var trackLabel = document.getElementById('kyca-track-label');
+  var audio    = document.getElementById('knot-audio');
+  var iframe   = document.getElementById('knot-player-iframe');
+  var sgIframe = document.getElementById('knot-sg-iframe');
+  var playBtn  = document.getElementById('knot-play-btn');
+  var volSlider = document.getElementById('knot-vol');
+  var volIcon   = document.getElementById('knot-vol-icon');
+  var trackLabel = document.getElementById('knot-track-label');
 
   // Restore volume
   var savedVol = parseFloat(localStorage.getItem(VOL_KEY) || '1');
@@ -328,17 +328,23 @@
   volSlider.value = savedVol;
 
   function startAudio() {
-    audio.src = STREAM_URL;
-    audio.load();
-    audio.play().then(function() {
-      isPlaying = true;
-      playBtn.innerHTML = '&#9646;&#9646;';
-      trackLabel.textContent = 'Live Stream';
-    }).catch(function() {
-      isPlaying = false;
-      playBtn.innerHTML = '&#9654;';
-      trackLabel.textContent = 'Click play to listen';
-    });
+    // KNOT uses StreamGuys player exclusively — load it in the hidden iframe
+    // and show the SG player in the main body for audio controls
+    var sgFrame = document.getElementById('knot-sg-iframe');
+    if (sgFrame && !sgFrame.src) sgFrame.src = STREAMGUYS_URL;
+    // Show the StreamGuys player in the main visible area
+    var sgIframe = document.getElementById('knot-player-iframe');
+    if (sgIframe) {
+      sgIframe.src = STREAMGUYS_URL;
+      sgIframe.style.display = 'block';
+      sgIframe.style.height = '280px';
+    }
+    // Hide the plain audio controls since SG handles play/pause
+    var audioMode = document.getElementById('knot-audio-mode');
+    if (audioMode) audioMode.style.display = 'none';
+    isPlaying = true;
+    if (playBtn) playBtn.innerHTML = '&#9646;&#9646;';
+    if (trackLabel) trackLabel.textContent = 'The Team 1450 KNOT';
   }
 
   function stopAudio() {
@@ -468,7 +474,7 @@
             if (isVideoMode) switchToAudio();
           }
         } else {
-          onAirShow.textContent = 'KYCA 1490 AM';
+          onAirShow.textContent = 'KNOT 1490 AM';
           watchBtn.style.display = 'none';
           if (isVideoMode) switchToAudio();
         }
@@ -477,12 +483,12 @@
   }
 
   // ── Wire up buttons ──────────────────────────────────────────
-  document.getElementById('kyca-minimize-btn').addEventListener('click', function(e) {
+  document.getElementById('knot-minimize-btn').addEventListener('click', function(e) {
     e.stopPropagation();
     if (isMinimized) { openPlayer(); } else { minimizePlayer(); }
   });
 
-  document.getElementById('kyca-close-btn').addEventListener('click', function(e) {
+  document.getElementById('knot-close-btn').addEventListener('click', function(e) {
     e.stopPropagation();
     closePlayer();
   });
