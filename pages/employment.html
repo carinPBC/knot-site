@@ -37,13 +37,7 @@
         Prescott Broadcasting is an equal opportunity employer. We are committed to a diverse and inclusive workplace. Current openings at KNOT and our sister stations are listed below.
       </p>
       <div id="job-listings">
-        <div style="background:#fff;border-radius:10px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:16px;">
-          <div style="font-size:12px;font-weight:800;color:#c0392b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">KNOT · Prescott, AZ</div>
-          <h3 style="font-size:18px;font-weight:700;color:#032a48;margin-bottom:8px;">Openings Posted Here</h3>
-          <div id="job-listings" style="margin-top:8px;">
-            <div style="text-align:center;padding:40px 0;color:#546e7a;">Loading openings...</div>
-          </div>
-        </div>
+        <div style="text-align:center;padding:20px 0;color:#546e7a;">Loading openings...</div>
       </div>
       <div style="margin-top:32px;padding:20px 24px;background:#ffffff;border-radius:8px;font-size:13px;color:#546e7a;">
         <strong style="color:#032a48;">EEO Policy:</strong> Prescott Broadcasting, LLC is an equal opportunity employer and does not discriminate on the basis of race, color, religion, sex, national origin, age, disability, or any other characteristic protected by law.
@@ -93,5 +87,32 @@
 </script>
 <script src="../js/player.js"></script>
   <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');</script>
+
+  <script>
+  (function() {
+    var API = 'https://pbc-cms-production.up.railway.app';
+    fetch(API + '/api/jobs?status=open')
+      .then(function(r) { return r.json(); })
+      .then(function(jobs) {
+        var el = document.getElementById('job-listings');
+        if (!el) return;
+        if (!jobs.length) {
+          el.innerHTML = '<div style="padding:32px 0;color:#546e7a;"><h3 style="color:#182f72;margin-bottom:8px;">No Current Openings</h3><p>There are no open positions at this time. Please send your resume to <a href=\"mailto:jobs@prescottbroadcasting.com\" style=\"color:#182f72;font-weight:600;\">jobs@prescottbroadcasting.com</a>.</p></div>';
+          return;
+        }
+        el.innerHTML = jobs.map(function(j) {
+          var applyBtn = j.apply_url
+            ? '<a href=\"' + j.apply_url + '\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;margin-top:12px;font-size:12px;font-weight:700;color:#182f72;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;\">Apply Now &rsaquo;</a>'
+            : '<a href=\"mailto:jobs@prescottbroadcasting.com\" style=\"display:inline-flex;margin-top:12px;font-size:12px;font-weight:700;color:#182f72;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;\">Apply by Email &rsaquo;</a>';
+          return '<div style=\"background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:24px 28px;margin-bottom:20px;border-left:4px solid #182f72;\">'
+            + '<div style=\"font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#ffd300;background:#182f72;display:inline-block;padding:2px 10px;border-radius:100px;margin-bottom:10px;\">' + (j.station || 'Prescott Broadcasting') + '</div>'
+            + '<div style=\"font-size:18px;font-weight:900;color:#182f72;margin-bottom:8px;\">' + j.title + '</div>'
+            + (j.department ? '<span style=\"background:#f0f4f8;color:#546e7a;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:12px;\">' + j.department + '</span>' : '')
+            + (j.description ? '<div style=\"font-size:14px;color:#546e7a;line-height:1.7;margin-bottom:8px;\">' + j.description.replace(/\n/g,'<br>') + '</div>' : '')
+            + applyBtn + '</div>';
+        }).join('');
+      }).catch(function() {});
+  })();
+  </script>
 </body>
 </html>
