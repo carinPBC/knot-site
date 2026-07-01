@@ -55,7 +55,7 @@
   </div>
   <div class="page-hero">
     <h1>News</h1>
-    <p>Local news from Prescott, Yavapai County, and Northern Arizona.</p>
+    <p>Sports coverage and local news from Prescott and Northern Arizona.</p>
   </div>
 
 
@@ -73,8 +73,26 @@
       </div>
       <input class="search-box" id="news-search" placeholder="Search headlines, categories…" />
     </div>
-    <div id="news-grid" class="news-grid">
-      <div class="no-results">Loading…</div>
+    <!-- SPORTS NEWS — Priority section -->
+    <div style="margin-bottom:48px;">
+      <div class="section-header sports-section-header" style="margin-bottom:20px;border-bottom-color:#02a124;">
+        <h2 class="section-title" style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:22px;">&#9917;</span> Sports News
+        </h2>
+      </div>
+      <div id="sports-grid" class="news-grid">
+        <div class="no-results">Loading…</div>
+      </div>
+    </div>
+
+    <!-- LOCAL NEWS — Subordinate section -->
+    <div>
+      <div class="section-header" style="margin-bottom:20px;">
+        <h2 class="section-title">Local News</h2>
+      </div>
+      <div id="local-grid" class="news-grid">
+        <div class="no-results">Loading…</div>
+      </div>
     </div>
   </div>
 
@@ -91,28 +109,35 @@
 
     function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
+    function makeCard(n) {
+      var img = n.image
+        ? (n.image.startsWith('http') ? n.image : n.image.startsWith('/uploads/') ? 'https://pbc-cms-production.up.railway.app' + n.image : n.image.startsWith('uploads/') ? 'https://pbc-cms-production.up.railway.app/' + n.image : '../images/news-placeholder.png')
+        : '../images/news-placeholder.png';
+      var date = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      return '<a class="news-card" href="article.html?id=' + n.id + '" style="text-decoration:none;color:inherit;display:block;">'
+        + '<img class="news-card-img" src="' + img + '" alt="' + (n.headline||'').replace(/"/g,'&quot;') + '" onerror="this.src=&quot;../images/news-placeholder.png&quot;" />'
+        + '<div class="news-card-body">'
+        + (n.category ? '<div class="news-cat">' + n.category + '</div>' : '')
+        + '<div class="news-headline">' + (n.headline||'') + '</div>'
+        + '<div class="news-meta"><span>' + date + '</span></div>'
+        + '</div></a>';
+    }
+
     function renderNews(items) {
-      var grid = document.getElementById('news-grid');
-      if (!grid) return;
+      var sportsGrid = document.getElementById('sports-grid');
+      var localGrid  = document.getElementById('local-grid');
+      if (!sportsGrid || !localGrid) return;
       if (!items.length) {
-        grid.innerHTML = '<div class="no-results">No news articles found for this date.</div>';
+        sportsGrid.innerHTML = '<div class="no-results" style="grid-column:1/-1;">No sports news for this date.</div>';
+        localGrid.innerHTML  = '<div class="no-results" style="grid-column:1/-1;">No local news for this date.</div>';
         return;
       }
-      grid.innerHTML = items.map(function(n) {
-        var img = n.image
-          ? (n.image.startsWith('http') ? n.image : n.image.startsWith('/uploads/') ? 'https://pbc-cms-production.up.railway.app' + n.image : n.image.startsWith('uploads/') ? 'https://pbc-cms-production.up.railway.app/' + n.image : '../images/news-placeholder.png')
-          : '../images/news-placeholder.png';
-        var date = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-        var station = '';
-        return '<a class="news-card" href="article.html?id=' + n.id + '" style="text-decoration:none;color:inherit;display:block;">'
-          + '<img class="news-card-img" src="' + img + '" alt="' + (n.headline||'').replace(/"/g,'&quot;') + '" onerror="this.src=&quot;../images/news-placeholder.png&quot;" />'
-          + '<div class="news-card-body">'
-          + (n.category ? '<div class="news-cat">' + n.category + '</div>' : '')
-          + '<div class="news-headline">' + (n.headline||'') + '</div>'
-          + '<div class="news-meta"><span>' + date + '</span></div>'
-          + '</div></a>';
-      }).join('');
+      var sports = items.filter(function(n) { return (n.news_type || '').indexOf('sports') >= 0; });
+      var local  = items.filter(function(n) { return (n.news_type || '').indexOf('sports') < 0; });
+      sportsGrid.innerHTML = sports.length ? sports.map(makeCard).join('') : '<div class="no-results" style="grid-column:1/-1;">No sports news for this date.</div>';
+      localGrid.innerHTML  = local.length  ? local.map(makeCard).join('')  : '<div class="no-results" style="grid-column:1/-1;">No local news for this date.</div>';
     }
+
 
     function updateDateLabel() {
       var label = document.getElementById('date-label');
