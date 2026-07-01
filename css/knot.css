@@ -446,3 +446,7 @@ div.content-wrap,
 .news-grid {
   padding-top: 24px !important;
 }
+
+/* ── SCHEDULE OVERRIDES ──────────────────────────────────────── */
+.override-slot { border-left: 3px solid #ffd300 !important; }
+.override-cell { font-weight: 800 !important; }

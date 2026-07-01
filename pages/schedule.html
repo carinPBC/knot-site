@@ -156,9 +156,13 @@
       return h < 12 ? h + ':00 am' : (h - 12) + ':00 pm';
     }
 
-    fetch(API + '/api/schedule/knot')
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
+    var todayISO = new Date().toISOString().split('T')[0];
+    Promise.all([
+      fetch(API + '/api/schedule/knot').then(function(r) { return r.json(); }),
+      fetch(API + '/api/schedule/knot/overrides').then(function(r) { return r.json(); }).catch(function() { return []; })
+    ]).then(function(results) {
+        var d = results[0];
+        var overrides = results[1] || [];
         var shows = d.shows || [];
         var slots = d.slots || [];
         var tbody = document.getElementById('schedule-body');
@@ -171,8 +175,12 @@
 
         // Build grid: for each hour, for each day group, find the slot
         var rows = '';
-        // Track which cells are already covered by a rowspan
         var covered = {}; // key: "day-hour"
+        var nowH = new Date().getHours();
+        var isToday = true; // schedule page shows today's grid
+
+        // Filter today's overrides
+        var todayOverrides = overrides.filter(function(o) { return o.override_date === todayISO; });
 
         for (var h = 0; h < 24; h++) {
           rows += '<tr>';
@@ -180,9 +188,14 @@
 
           DAY_GROUPS.forEach(function(day) {
             var key = day + '-' + h;
-            if (covered[key]) return; // already covered by rowspan above
+            if (covered[key]) return;
 
-            // Find slot that covers this hour
+            // Check for today's override first (only applies to today's day column)
+            var override = null;
+            if (day === 'mon' || day === 'tue-fri') { // today maps to one of these
+              override = todayOverrides.find(function(o) { return o.start_hour <= h && o.end_hour > h; });
+            }
+
             var slot = null;
             for (var i = 0; i < slots.length; i++) {
               if (slots[i].day_group === day && slots[i].start_hour <= h && slots[i].end_hour > h) {
@@ -191,17 +204,21 @@
               }
             }
 
-            if (slot && slot.start_hour === h) {
+            if (override && override.start_hour === h && (day === 'mon' || day === 'tue-fri')) {
+              var span = override.end_hour - override.start_hour;
+              for (var fh = h + 1; fh < override.end_hour; fh++) { covered[day + '-' + fh] = true; }
+              rows += '<td class="show-cell override-cell" rowspan="' + span + '" style="background:#182f72;color:#ffd300;border:2px solid #ffd300;">'
+                + '⚽ ' + override.name
+                + (override.note ? '<br><small style="opacity:.7;font-weight:400;">' + override.note + '</small>' : '')
+                + '</td>';
+            } else if (slot && slot.start_hour === h) {
               var span = slot.end_hour - slot.start_hour;
-              // Mark future hours as covered
-              for (var fh = h + 1; fh < slot.end_hour; fh++) {
-                covered[day + '-' + fh] = true;
-              }
-              var content = slot.link_url
+              for (var fh = h + 1; fh < slot.end_hour; fh++) { covered[day + '-' + fh] = true; }
+              var cellContent = slot.link_url
                 ? '<a href="' + slot.link_url + '" target="_blank">' + slot.name + '</a>'
                 : slot.name;
-              rows += '<td class="show-cell" rowspan="' + span + '" style="background:' + slot.color + ';color:' + (slot.text_color || '#fff') + ';">' + content + '</td>';
-            } else if (!slot) {
+              rows += '<td class="show-cell" rowspan="' + span + '" style="background:' + slot.color + ';color:' + (slot.text_color || '#fff') + ';">' + cellContent + '</td>';
+            } else if (!slot && !(override && covered[key])) {
               rows += '<td class="empty-cell"></td>';
             }
           });
@@ -211,8 +228,11 @@
 
         tbody.innerHTML = rows;
 
-        // Legend
-        legend.innerHTML = shows.map(function(s) {
+        // Legend + overrides notice
+        var overrideLegend = todayOverrides.length
+          ? '<div class="legend-item" style="background:#182f72;color:#ffd300;padding:4px 10px;border-radius:4px;border:1.5px solid #ffd300;">⚽ Game override active today</div>'
+          : '';
+        legend.innerHTML = overrideLegend + shows.map(function(s) {
           return '<div class="legend-item">'
             + '<div class="legend-swatch" style="background:' + s.color + ';"></div>'
             + s.name

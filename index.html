@@ -150,29 +150,37 @@
     var s = res[0];
     var p = res[1];
 
-    // ── ON AIR ───────────────────────────────────────────────────
-    fetch(API + '/api/schedule/knot').then(function(r){return r.json();}).then(function(d) {
-      var slots = d.slots || [];
-      var now = new Date();
-      var nowH = now.getHours();
-      var dow = now.getDay();
-      var todayGroup = dow === 0 ? 'sun' : dow === 6 ? 'sat' : dow === 1 ? 'mon' : 'tue-fri';
-      var current = slots.find(function(sl) {
-        return sl.day_group === todayGroup && sl.start_hour <= nowH && sl.end_hour > nowH;
-      });
-      if (!current && todayGroup === 'mon') {
-        current = slots.find(function(sl) {
-          return sl.day_group === 'tue-fri' && sl.start_hour <= nowH && sl.end_hour > nowH;
-        });
-      }
-      if (current) {
-        function fmtH(h) { if(h===0)return'12:00 AM'; if(h===12)return'12:00 PM'; return h<12?h+':00 AM':(h-12)+':00 PM'; }
-        document.getElementById('on-air-show').textContent = current.name;
-        document.getElementById('on-air-host').textContent = '';
-        document.getElementById('on-air-time').textContent = fmtH(current.start_hour) + ' \u2013 ' + fmtH(current.end_hour);
-        document.getElementById('on-air-bar').style.display = 'flex';
-      }
-    }).catch(function(){});
+    // ── ON AIR (override-aware) ──────────────────────────────────
+    (function() {
+      var _now = new Date();
+      var _nowH = _now.getHours();
+      var _todayISO = _now.toISOString().split('T')[0];
+      var _dow = _now.getDay();
+      var _todayGroup = _dow === 0 ? 'sun' : _dow === 6 ? 'sat' : _dow === 1 ? 'mon' : 'tue-fri';
+      function _fmtH(h) { if(h===0)return'12:00 AM'; if(h===12)return'12:00 PM'; return h<12?h+':00 AM':(h-12)+':00 PM'; }
+      Promise.all([
+        fetch(API + '/api/schedule/knot').then(function(r){return r.json();}),
+        fetch(API + '/api/schedule/knot/overrides').then(function(r){return r.json();}).catch(function(){return [];})
+      ]).then(function(res) {
+        var slots = (res[0] && res[0].slots) ? res[0].slots : [];
+        var overrides = res[1] || [];
+        var ov = overrides.find(function(o) { return o.override_date === _todayISO && o.start_hour <= _nowH && o.end_hour > _nowH; });
+        if (ov) {
+          document.getElementById('on-air-show').textContent = '⚽ ' + ov.name;
+          document.getElementById('on-air-time').textContent = _fmtH(ov.start_hour) + ' – ' + _fmtH(ov.end_hour);
+          document.getElementById('on-air-bar').style.display = 'flex';
+          return;
+        }
+        var current = slots.find(function(sl) { return sl.day_group === _todayGroup && sl.start_hour <= _nowH && sl.end_hour > _nowH; });
+        if (!current && _todayGroup === 'mon') current = slots.find(function(sl) { return sl.day_group === 'tue-fri' && sl.start_hour <= _nowH && sl.end_hour > _nowH; });
+        if (current) {
+          document.getElementById('on-air-show').textContent = current.name;
+          document.getElementById('on-air-host').textContent = '';
+          document.getElementById('on-air-time').textContent = _fmtH(current.start_hour) + ' – ' + _fmtH(current.end_hour);
+          document.getElementById('on-air-bar').style.display = 'flex';
+        }
+      }).catch(function(){});
+    })();
 
     // ── HERO IMAGE ───────────────────────────────────────────────
     if (p.hero_image) {
@@ -199,7 +207,12 @@
     }).catch(function(){});
 
     // ── SCHEDULE ─────────────────────────────────────────────────
-    fetch(API + '/api/schedule/knot').then(function(r){return r.json();}).then(function(d) {
+    Promise.all([
+      fetch(API + '/api/schedule/knot').then(function(r){return r.json();}),
+      fetch(API + '/api/schedule/knot/overrides').then(function(r){return r.json();}).catch(function(){return [];})
+    ]).then(function(results) {
+      var d = results[0];
+      var overrides = results[1] || [];
       var slots = d.slots || [];
       var grid = document.getElementById('schedule-grid');
       if (!slots.length) { grid.innerHTML = '<p style="color:#546e7a">Schedule coming soon.</p>'; return; }
@@ -224,11 +237,18 @@
       if (startFrom < 0) startFrom = 0;
       var display = todaySlots.slice(startFrom, startFrom + 6);
       function fmtH(h) { if(h===0)return'12:00 AM'; if(h===12)return'12:00 PM'; return h<12?h+':00 AM':(h-12)+':00 PM'; }
+      var todayISO = now.toISOString().split('T')[0];
       grid.innerHTML = display.map(function(sl) {
         var isNow = sl.start_hour <= nowH && sl.end_hour > nowH;
-        return '<div class="schedule-card'+(isNow?' on-air-now':'')+'">'
+        // Check for override at this hour
+        var override = overrides.find(function(o) {
+          return o.override_date === todayISO && o.start_hour <= sl.start_hour && o.end_hour >= sl.end_hour;
+        });
+        var showName = override ? ('⚽ ' + override.name) : (sl.name || '');
+        var isOverride = !!override;
+        return '<div class="schedule-card'+(isNow?' on-air-now':''+(isOverride?' override-slot':''))+'">'
           + '<div class="schedule-time">'+(isNow?'&#9654; On Air Now &mdash; ':'')+fmtH(sl.start_hour)+' &ndash; '+fmtH(sl.end_hour)+'</div>'
-          + '<div class="schedule-show">'+(sl.name||'')+'</div>'
+          + '<div class="schedule-show">'+showName+'</div>'
           + '</div>';
       }).join('');
     }).catch(function(){});

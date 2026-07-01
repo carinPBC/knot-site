@@ -407,13 +407,30 @@
     var now = new Date();
     var day = now.getDay();
     var nowH = now.getHours();
+    var todayISO = now.toISOString().split('T')[0];
     var dayGroups = {0:'sun',1:'mon',2:'tue-fri',3:'tue-fri',4:'tue-fri',5:'fri',6:'sat'};
     var todayGroup = dayGroups[day] || 'mon';
 
-    fetch(API_URL + '/api/schedule/knot')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var slots = data.slots || [];
+    // Fetch schedule + overrides in parallel
+    Promise.all([
+      fetch(API_URL + '/api/schedule/knot').then(function(r) { return r.json(); }).catch(function() { return {}; }),
+      fetch(API_URL + '/api/schedule/knot/overrides').then(function(r) { return r.json(); }).catch(function() { return []; })
+    ]).then(function(results) {
+      var data = results[0];
+      var overrides = results[1] || [];
+      var slots = data.slots || [];
+
+      // Check overrides first — override wins if date + hour match
+      var currentOverride = overrides.find(function(o) {
+        return o.override_date === todayISO && o.start_hour <= nowH && o.end_hour > nowH;
+      });
+
+      var showName, startH, endH, videoUrl;
+      if (currentOverride) {
+        showName = '⚽ ' + currentOverride.name;
+        startH = currentOverride.start_hour;
+        endH = currentOverride.end_hour;
+      } else {
         var current = slots.find(function(sl) {
           return sl.day_group === todayGroup && sl.start_hour <= nowH && sl.end_hour > nowH;
         });
@@ -423,19 +440,26 @@
           });
         }
         if (current) {
-          var bar = document.getElementById('on-air-bar');
-          var showEl = document.getElementById('on-air-show');
-          var timeEl = document.getElementById('on-air-time');
-          if (bar) { bar.style.display = 'flex'; setStickyOffsets(); }
-          if (showEl) showEl.textContent = current.name;
-          if (timeEl) timeEl.textContent = fmtH(current.start_hour) + ' \u2013 ' + fmtH(current.end_hour);
-          if (current.video_url) {
-            var watchBtn = document.getElementById('watch-live-btn');
-            if (watchBtn) watchBtn.style.display = 'inline-flex';
-          }
+          showName = current.name;
+          startH = current.start_hour;
+          endH = current.end_hour;
+          videoUrl = current.video_url;
         }
-      })
-      .catch(function() {});
+      }
+
+      if (showName) {
+        var bar = document.getElementById('on-air-bar');
+        var showEl = document.getElementById('on-air-show');
+        var timeEl = document.getElementById('on-air-time');
+        if (bar) { bar.style.display = 'flex'; setStickyOffsets(); }
+        if (showEl) showEl.textContent = showName;
+        if (timeEl) timeEl.textContent = fmtH(startH) + ' – ' + fmtH(endH);
+        if (videoUrl) {
+          var watchBtn = document.getElementById('watch-live-btn');
+          if (watchBtn) watchBtn.style.display = 'inline-flex';
+        }
+      }
+    }).catch(function() {});
   }
 
   var NAV_H = 180;
