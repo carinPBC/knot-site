@@ -95,6 +95,69 @@
       .schedule-table { font-size: 11px; }
       .schedule-table th, .schedule-table td { padding: 5px 6px; }
     }
+
+    /* ── UPCOMING GAME CARDS ─────────────────── */
+    .game-card {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      overflow: hidden;
+      border-top: 4px solid #02a124;
+    }
+    .game-card-header {
+      background: #02a124;
+      color: #fff;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .game-date-badge {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .game-sport-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255,255,255,.2);
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+    .game-teams {
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #182f72;
+      line-height: 1.3;
+    }
+    .game-teams .vs { font-size: 12px; font-weight: 600; color: #546e7a; display: block; margin: 2px 0; }
+    .game-meta {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .game-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #445566;
+    }
+    .game-meta-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #02a124;
+      min-width: 60px;
+    }
+    .game-time-display {
+      font-weight: 700;
+      color: #182f72;
+    }
   </style>
 </head>
 <body>
@@ -141,6 +204,17 @@
       </table>
     </div>
     <div class="schedule-legend" id="schedule-legend"></div>
+  </div>
+
+  <!-- UPCOMING GAMES -->
+  <div id="upcoming-games-section" style="max-width:1400px;margin:0 auto;padding:0 24px 64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:12px;border-bottom:3px solid #02a124;">
+      <span style="font-size:24px;">&#9917;</span>
+      <h2 style="font-size:clamp(18px,2.5vw,26px);font-weight:900;color:#182f72;text-transform:uppercase;letter-spacing:.04em;">Upcoming Broadcasts</h2>
+    </div>
+    <div id="upcoming-games-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">
+      <div style="color:#546e7a;font-size:14px;padding:24px 0;">Loading upcoming games…</div>
+    </div>
   </div>
 
   <div id="site-footer"></div>
@@ -204,12 +278,26 @@
               }
             }
 
+            // Check for scheduled game on today's date
+            var game = todayOverrides.length === 0 ? null : null; // games handled separately
+            var todayGame = (d.games || []).find(function(g) { return g.game_date === todayISO && g.start_hour <= h && g.end_hour > h; });
+
             if (override && override.start_hour === h && (day === 'mon' || day === 'tue-fri')) {
               var span = override.end_hour - override.start_hour;
               for (var fh = h + 1; fh < override.end_hour; fh++) { covered[day + '-' + fh] = true; }
               rows += '<td class="show-cell override-cell" rowspan="' + span + '" style="background:#182f72;color:#ffd300;border:2px solid #ffd300;">'
                 + '⚽ ' + override.name
                 + (override.note ? '<br><small style="opacity:.7;font-weight:400;">' + override.note + '</small>' : '')
+                + '</td>';
+            } else if (todayGame && todayGame.start_hour === h && (day === 'mon' || day === 'tue-fri')) {
+              var span = todayGame.end_hour - todayGame.start_hour;
+              for (var fh = h + 1; fh < todayGame.end_hour; fh++) { covered[day + '-' + fh] = true; }
+              var gameName = (todayGame.away_team && todayGame.home_team)
+                ? todayGame.away_team + ' @ ' + todayGame.home_team
+                : todayGame.sport;
+              rows += '<td class="show-cell" rowspan="' + span + '" style="background:#02a124;color:#ffffff;font-weight:800;">'
+                + '⚽ ' + gameName
+                + (todayGame.network ? '<br><small style="opacity:.8;font-weight:400;">' + todayGame.network + '</small>' : '')
                 + '</td>';
             } else if (slot && slot.start_hour === h) {
               var span = slot.end_hour - slot.start_hour;
@@ -242,6 +330,58 @@
       .catch(function() {
         document.getElementById('schedule-body').innerHTML =
           '<tr><td colspan="5" style="text-align:center;padding:40px;color:#c0392b;">Could not load schedule.</td></tr>';
+      });
+
+    // ── LOAD UPCOMING GAMES ──────────────────────────────────────
+    fetch(API + '/api/schedule/knot/games')
+      .then(function(r) { return r.json(); })
+      .then(function(games) {
+        var grid = document.getElementById('upcoming-games-grid');
+        if (!games || !games.length) {
+          grid.innerHTML = '<p style="color:#546e7a;font-size:14px;grid-column:1/-1;">No games currently scheduled. Check back soon!</p>';
+          return;
+        }
+        grid.innerHTML = games.map(function(g) {
+          var dateObj = new Date(g.game_date + 'T12:00:00');
+          var dateStr = dateObj.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+          var awayTeam = g.away_team || '';
+          var homeTeam = g.home_team || '';
+          var timeDisplay = '';
+          if (g.broadcast_time_et) {
+            var m = g.broadcast_time_et.match(/(\d+)(?::(\d+))?\s*(am|pm|AM|PM)/i);
+            if (m) {
+              var h = parseInt(m[1]); var min = m[2] || '00'; var ap = m[3].toUpperCase();
+              if (ap === 'PM' && h !== 12) h += 12;
+              if (ap === 'AM' && h === 12) h = 0;
+              var mtH = h - 2; var mtAp = 'AM';
+              if (mtH < 0) mtH += 24;
+              if (mtH >= 12) { mtAp = 'PM'; if (mtH > 12) mtH -= 12; }
+              else if (mtH === 0) mtH = 12;
+              timeDisplay = g.broadcast_time_et.toUpperCase().replace(/\s*ET$/i,'') + ' ET / ' + mtH + ':' + min + ' ' + mtAp + ' MT';
+            } else { timeDisplay = g.broadcast_time_et; }
+          }
+          return '<div class="game-card">'
+            + '<div class="game-card-header">'
+            + '<span class="game-date-badge">' + dateStr + '</span>'
+            + '<span class="game-sport-badge">' + g.sport + '</span>'
+            + '</div>'
+            + '<div class="game-teams">'
+            + (awayTeam || 'Away')
+            + '<span class="vs">at</span>'
+            + (homeTeam || 'Home')
+            + '</div>'
+            + '<div class="game-meta">'
+            + (timeDisplay ? '<div class="game-meta-row"><span class="game-meta-label">Time</span><span class="game-time-display">' + timeDisplay + '</span></div>' : '')
+            + (g.network ? '<div class="game-meta-row"><span class="game-meta-label">Network</span><span>' + g.network + '</span></div>' : '')
+            + (g.location ? '<div class="game-meta-row"><span class="game-meta-label">Location</span><span>' + g.location + '</span></div>' : '')
+            + (g.announcer ? '<div class="game-meta-row"><span class="game-meta-label">Announcer</span><span>' + g.announcer + '</span></div>' : '')
+            + (g.notes ? '<div class="game-meta-row"><span class="game-meta-label">Notes</span><span style="color:#546e7a;font-style:italic;">' + g.notes + '</span></div>' : '')
+            + '</div></div>';
+        }).join('');
+      })
+      .catch(function() {
+        var grid = document.getElementById('upcoming-games-grid');
+        if (grid) grid.innerHTML = '<p style="color:#546e7a;">Could not load games.</p>';
       });
   })();
   </script>

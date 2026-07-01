@@ -411,18 +411,23 @@
     var dayGroups = {0:'sun',1:'mon',2:'tue-fri',3:'tue-fri',4:'tue-fri',5:'fri',6:'sat'};
     var todayGroup = dayGroups[day] || 'mon';
 
-    // Fetch schedule + overrides in parallel
+    // Fetch schedule + overrides + games in parallel
     Promise.all([
       fetch(API_URL + '/api/schedule/knot').then(function(r) { return r.json(); }).catch(function() { return {}; }),
-      fetch(API_URL + '/api/schedule/knot/overrides').then(function(r) { return r.json(); }).catch(function() { return []; })
+      fetch(API_URL + '/api/schedule/knot/overrides').then(function(r) { return r.json(); }).catch(function() { return []; }),
+      fetch(API_URL + '/api/schedule/knot/games').then(function(r) { return r.json(); }).catch(function() { return []; })
     ]).then(function(results) {
       var data = results[0];
       var overrides = results[1] || [];
+      var games = results[2] || [];
       var slots = data.slots || [];
 
-      // Check overrides first — override wins if date + hour match
+      // Priority: override > scheduled game > regular show
       var currentOverride = overrides.find(function(o) {
         return o.override_date === todayISO && o.start_hour <= nowH && o.end_hour > nowH;
+      });
+      var currentGame = games.find(function(g) {
+        return g.game_date === todayISO && g.start_hour <= nowH && g.end_hour > nowH;
       });
 
       var showName, startH, endH, videoUrl;
@@ -430,6 +435,13 @@
         showName = '⚽ ' + currentOverride.name;
         startH = currentOverride.start_hour;
         endH = currentOverride.end_hour;
+      } else if (currentGame) {
+        var gameName = (currentGame.away_team && currentGame.home_team)
+          ? currentGame.away_team + ' @ ' + currentGame.home_team
+          : currentGame.sport;
+        showName = '⚽ ' + gameName;
+        startH = currentGame.start_hour;
+        endH = currentGame.end_hour;
       } else {
         var current = slots.find(function(sl) {
           return sl.day_group === todayGroup && sl.start_hour <= nowH && sl.end_hour > nowH;
