@@ -460,3 +460,22 @@ div.content-wrap,
 /* ── SCHEDULE OVERRIDES ──────────────────────────────────────── */
 .override-slot { border-left: 3px solid #ffd300 !important; }
 .override-cell { font-weight: 800 !important; }
+
+/* ── FOOTER MOBILE OVERFLOW FIX (July 9, 2026) ──────────────────
+   Root cause: .footer-right-group had white-space:nowrap on .footer-col ul
+   + fixed 48px gaps + no mobile stacking rule, while .footer-logo img is
+   pinned to 165px tall with no shrink — together these forced ~700px of
+   horizontal overflow on mobile viewports. */
+@media (max-width: 768px) {
+  .footer-grid { flex-wrap: wrap !important; }
+  .footer-right-group { gap: 24px !important; flex-wrap: wrap !important; }
+  .footer-right-group .footer-col ul { white-space: normal !important; }
+}
+@media (max-width: 480px) {
+  .footer-grid { flex-direction: column !important; }
+  .footer-logo-col { min-width: 0 !important; }
+  .footer-logo img { height: 90px !important; }
+  .footer-right-group { margin-left: 0 !important; flex-direction: column !important; gap: 20px !important; }
+  .footer-right-group .footer-col ul { white-space: normal !important; }
+  html, body { overflow-x: hidden !important; }
+}
