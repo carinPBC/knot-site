@@ -46,9 +46,9 @@
       +       '<ul class="nav-links" id="main-nav-links">'+links+'</ul>'
       +       '<div class="nav-actions">'
       +         '<button class="nav-search" aria-label="Search">'+SVG.search+'</button>'
-      +         '<button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">'+SVG.menu+'</button>'
       +       '</div>'
       +     '</div>'
+      +     '<button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">'+SVG.menu+'</button>'
       +     '<div class="nav-social">'+socialHTML(cfg.site.social)+'</div>'
       +     '<div class="nav-app-strip">'
       +       '<span class="nav-app-cta">Stream on mobile</span>'
@@ -159,8 +159,26 @@
     if (hb && !hb._wired) {
       hb._wired = true;
       hb.addEventListener('click', function() {
+        var wrap = document.querySelector('.nav-links-wrap');
         var nl = document.getElementById('main-nav-links');
-        if (nl) nl.style.display = nl.style.display === 'flex' ? 'none' : 'flex';
+        if (wrap && nl) {
+          var isOpen = wrap.classList.contains('nav-open');
+          wrap.classList.toggle('nav-open', !isOpen);
+          if (!isOpen) {
+            wrap.style.setProperty('display', 'flex', 'important');
+            wrap.style.flexDirection = 'column';
+            wrap.style.alignItems = 'stretch';
+            wrap.style.position = 'absolute';
+            wrap.style.top = '100%';
+            wrap.style.left = '0';
+            wrap.style.right = '0';
+            wrap.style.zIndex = '200';
+            nl.style.display = 'flex';
+            nl.style.flexDirection = 'column';
+          } else {
+            wrap.style.setProperty('display', 'none', 'important');
+          }
+        }
       });
     }
   }
