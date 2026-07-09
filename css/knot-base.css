@@ -1073,8 +1073,8 @@ a.content-card-link:hover .content-card-title { color: var(--red); }
     overflow: hidden !important;
   }
   .nav-logo img {
-    height: 52px !important;
-    max-width: 150px !important;
+    height: 100px !important;
+    max-width: 180px !important;
     width: auto !important;
     min-width: 0 !important;
   }
@@ -1089,5 +1089,35 @@ a.content-card-link:hover .content-card-title { color: var(--red); }
     width: 26px !important;
     height: 26px !important;
     font-size: 14px !important;
+  }
+}
+
+/* Weather band mobile fix — stack weather widget above SoundCloud report,
+   the hardcoded min-width:520px on *-weather-report was forcing the weather
+   widget to 0 width on screens under ~700px */
+@media (max-width: 700px) {
+  [id$="-weather-band"] {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 10px 0 !important;
+  }
+  [id$="-weather-band"] > div:first-child {
+    width: 100% !important;
+    height: 90px !important;
+    flex: none !important;
+  }
+  [id$="-weather-report"] {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(255,255,255,0.12) !important;
+    padding: 10px 16px !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+  }
+  [id$="-weather-report"] iframe {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
